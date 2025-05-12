@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Task Manager</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" />
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <style>
+    /* Sidebar Styles */
+    .sidebar {
+        width: 250px;
+        height: 100vh;
+        background-color: #1e3a5f;
+        padding: 15px;
+        position: fixed;
+        transition: transform 0.3s ease;
+        z-index: 1000;
+      }
+
+      .sidebar.collapsed {
+        transform: translateX(-100%);
+      }
+
+      .sidebar a {
+        color: white;
+        text-decoration: none;
+        display: block;
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 5px;
+      }
+
+      .sidebar a:hover {
+        background-color: #172c4d;
+      }
+
+      .sidebar .active {
+        background-color: #121f33;
+      }
+
+      .sidebar img {
+        width: 40px;
+        margin-right: 10px;
+      }
+
+    /* Content Area */
+    .content {
+      margin-left: 250px;
+      padding: 20px;
+      transition: margin-left 0.3s ease;
+    }
+
+    .content.expanded {
+      margin-left: 0;
+    }
+
+    .card {
+      transition: transform 0.3s;
+    }
+
+    .card:hover {
+      transform: scale(1.05);
+    }
+
+    /* Dropdown Styles */
+    .dropdown-menu {
+        background-color: #1e3a5f;
+        border: none;
+      }
+
+      .dropdown-item {
+        color: white;
+      }
+
+      .dropdown-item:hover {
+        background-color: #172c4d;
+        color: white;
+      }
+
+      .readonly-input {
+        background-color: #eaeaeb;
+        cursor: not-allowed;
+      }
+
+    /* Mobile Toggle Button */
+    .sidebar-toggle {
+      display: none;
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 1001;
+      background-color: #1e3a5f;
+      border: none;
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    /* Responsive Calendar Input */
+    input[type="date"] {
+      width: 100%;
+      padding: 8px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box; /* Ensure padding is included in width */
+    }
+
+    /* Responsive Dropdown */
+    select.form-select {
+      width: 100%;
+      padding: 8px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box; /* Ensure padding is included in width */
+    }
+
+    /* Responsive Styles */
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+
+      .sidebar.collapsed {
+        transform: translateX(0);
+      }
+
+      .content {
+        margin-left: 0;
+      }
+
+      .sidebar-toggle {
+        display: block;
+      }
+      input[type="date"],
+      select.form-select {
+        font-size: 14px; /* Smaller font size for mobile */
+        padding: 6px; /* Smaller padding for mobile */
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div>
+    <!-- Sidebar Toggle Button -->
+    <button class="sidebar-toggle" id="sidebarToggle">
+      <i class="bi bi-list"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+      <div class="d-flex align-items-center mb-4 mt-3">
+        <img src="../assets/logo.png" alt="Logo" />
+        <span class="text-white fw-bold"><b><h3>TeamWork</h3></b></span>
+      </div>
+      <a href="dashboard.html"
+        ><i class="bi bi-house-door"></i> Dashboard</a
+      >
+      <a href="viewProgress.html"
+        ><i class="bi bi-bar-chart"></i> View Progress</a
+      >
+      <a href="individualProgress.html"
+        ><i class="bi bi-bar-chart"></i> Individual Progress</a
+      >
+      <a href="userslist.html"><i class="bi bi-people"></i> Users List</a>
+      <a href="tasks.html" class="active"><i class="bi bi-list-task"></i> Assigning Tasks</a>
+      <a href="#" id="logoutBtn"><i class="bi bi-box-arrow-right"></i> Sign Out</a>
+      <div class="dropdown">
+        <a
+          href="#"
+          class="dropdown-toggle"
+          id="settingsDropdown"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          <i class="bi bi-gear"></i> Settings
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="settingsDropdown">
+          <li>
+            <a class="dropdown-item" href="#" id="editProfileBtn"
+              >View Profile</a
+            >
+          </li>
+          <li>
+            <a class="dropdown-item" href="#" id="changePasswordBtn"
+              >Change Password</a
+            >
+          </li>
+          <li>
+            <a class="dropdown-item" href="#" id="deleteAccountBtn"
+              >Delete Account</a
+            >
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="content" id="content">
+      <div class="container-fluid mt-4">
+        <h2 class="mb-3">Tasks Display</h2>
+        <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#taskModal">
+          New Task
+        </button>
+        <div class="table-responsive">
+          <table class="table table-bordered">
+            <thead class="table-primary">
+              <tr>
+                <th>Task ID</th>
+                <th>Task Title</th>
+                <th>Deadline</th>
+                <th>Team Name</th>
+                <th>Asset File</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="taskTableBody">
+              <!-- Dynamic content will be inserted here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Task Modal -->
+  <div class="modal fade" id="taskModal" tabindex="-1" aria-labelledby="taskModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="taskModalLabel">New Task</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="taskForm">
+            <input type="hidden" class="form-control" id="updateId" value="" />
+
+            <div class="mb-3">
+              <label for="taskID" class="form-label">Task ID</label>
+              <input type="number" class="form-control" id="taskID" required />
+            </div>
+            <div class="mb-3">
+              <label for="taskTitle" class="form-label">Task Title</label>
+              <input type="text" class="form-control" id="taskTitle" required />
+            </div>
+            <div class="mb-3">
+              <label for="taskAssets" class="form-label">Assets (File Upload)</label>
+              <input type="file" class="form-control" id="taskAssets" />
+            </div>
+            <div class="mb-3">
+              <label for="taskDeadline" class="form-label">Deadline</label>
+              <input type="date" class="form-control" id="taskDeadline" required />
+            </div>
+            <div class="mb-3">
+              <label for="taskProgress" class="form-label">Progress</label>
+              <input type="text" class="form-control" id="taskProgress" value="To Do" readonly />
+            </div>
+            <div class="mb-3">
+              <label for="taskTeam" class="form-label">Assign Team</label>
+              <select class="form-select" id="taskTeam">
+                <!-- Teams will be dynamically loaded here -->
+              </select>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary">
+                Assign Task
+              </button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Profile Modal -->
+  <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <!-- Modal Header -->
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title" id="editProfileModalLabel">View Profile</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="modal-body">
+          <form id="editProfileForm">
+            <!-- Name Field -->
+            <div class="mb-3">
+              <label for="editName" class="form-label fw-bold">Name</label>
+              <input
+                type="text"
+                class="form-control"
+                id="editName"
+                placeholder="Enter your name"
+                required
+              />
+            </div>
+
+            <!-- Email Field -->
+            <div class="mb-3">
+              <label for="editEmail" class="form-label fw-bold">Email</label>
+              <input
+                type="email"
+                class="form-control readonly-input"
+                id="editEmail"
+                placeholder="Enter your email"
+                readonly
+                required
+              />
+            </div>
+
+            <!-- Submit Button -->
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary">
+                <i class="bi bi-pencil-fill me-2"></i>Update Profile
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="modal-footer">
+          <small class="text-muted">Make sure your information is up to date.</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Change Password Modal -->
+  <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <!-- Modal Header -->
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title" id="changePasswordModalLabel">Change Password</h5>
+          <button
+            type="button"
+            class="btn-close btn-close-white"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="modal-body">
+          <form id="changePasswordForm">
+            <!-- Current Password Field -->
+            <div class="mb-4">
+              <label for="currentPassword" class="form-label fw-bold">Current Password</label>
+              <input
+                type="password"
+                class="form-control"
+                id="currentPassword"
+                placeholder="Enter your current password"
+                required
+              />
+            </div>
+
+            <!-- New Password Field -->
+            <div class="mb-4">
+              <label for="newPassword" class="form-label fw-bold">New Password</label>
+              <input
+                type="password"
+                class="form-control"
+                id="newPassword"
+                placeholder="Enter a new password"
+                required
+              />
+            </div>
+
+            <!-- Confirm New Password Field -->
+            <div class="mb-4">
+              <label for="confirmNewPassword" class="form-label fw-bold">Confirm New Password</label>
+              <input
+                type="password"
+                class="form-control"
+                id="confirmNewPassword"
+                placeholder="Re-enter your new password"
+                required
+              />
+              <small class="form-text text-muted">Ensure both passwords match.</small>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary">
+                <i class="bi bi-key-fill me-2"></i>Change Password
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="modal-footer">
+          <small class="text-muted">For security reasons, avoid using easily guessable passwords.</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Account Modal -->
+  <div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <!-- Modal Header -->
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title" id="deleteAccountLabel">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>Delete Account
+          </h5>
+          <button
+            type="button"
+            class="btn-close btn-close-white"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="modal-body">
+          <p class="lead">
+            Are you sure you want to delete your account? This action <strong>cannot be undone</strong>.
+          </p>
+          <p class="text-muted">
+            All your data, including tasks, progress, and team information, will be permanently removed.
+          </p>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+            <i class="bi bi-x-circle me-2"></i>Cancel
+          </button>
+          <button type="button" class="btn btn-danger" id="confirmDeleteAccount">
+            <i class="bi bi-trash-fill me-2"></i>Delete Account
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Toast Container -->
+  <div class="toast-container position-fixed top-0 end-0 p-3">
+    <div
+      id="toastMessage"
+      class="toast align-items-center text-white bg-danger border-0"
+      role="alert"
+      aria-live="assertive"
+      aria-atomic="true"
+    >
+      <div class="d-flex">
+        <div class="toast-body"></div>
+        <button
+          type="button"
+          class="btn-close btn-close-white me-2 m-auto"
+          data-bs-dismiss="toast"
+          aria-label="Close"
+        ></button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../assets/js/signout.js"></script>
+
+  <script>
+    // Get today's date in YYYY-MM-DD format
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('taskDeadline').setAttribute('min', today);
+
+    // Toggle Sidebar on Mobile
+    document
+      .getElementById("sidebarToggle")
+      .addEventListener("click", function () {
+        const sidebar = document.getElementById("sidebar");
+        const content = document.getElementById("content");
+        sidebar.classList.toggle("collapsed");
+        content.classList.toggle("expanded");
+      });
+    // Event listener for the logout button
+    document.getElementById("logoutBtn").addEventListener("click", signOut);
+
+    function showToast(message, bgColor = "bg-danger") {
+      $("#toastMessage")
+        .removeClass("bg-danger bg-success")
+        .addClass(bgColor);
+      $("#toastMessage .toast-body").text(message);
+      let toast = new bootstrap.Toast(
+        document.getElementById("toastMessage")
+      );
+      toast.show();
+    }
+
+    $(document).ready(function () {
+      const userRole = getCookie("userRole");
+      if (!userRole) {
+        window.location.href = "../index.html";
+      }
+
+      function showToast(message, bgColor = "bg-danger") {
+        $("#toastMessage")
+          .removeClass("bg-danger bg-success")
+          .addClass(bgColor);
+        $("#toastMessage .toast-body").text(message);
+        let toast = new bootstrap.Toast(
+          document.getElementById("toastMessage")
+        );
+        toast.show();
+      }
+
+      // Fetch tasks on page load
+      fetchTasks();
+
+      function fetchTeams() {
+        $.get("http://localhost:3000/teams", function (teams) {
+          let teamDropdown = $("#taskTeam");
+          teamDropdown.empty();
+          teams.forEach((team) => {
+            teamDropdown.append(
+              `<option value="${team._id}">${team.teamName}-${team.teamID}</option>`
+            );
+          });
+
+          // Also populate the edit task modal's team dropdown
+          let editTeamDropdown = $("#editTaskTeam");
+          editTeamDropdown.empty();
+          teams.forEach((team) => {
+            editTeamDropdown.append(
+              `<option value="${team._id}">${team.teamName}-${team.teamID}</option>`
+            );
+          });
+        });
+      }
+      fetchTeams();
+
+      $(document).on("click", ".editTask", function () {
+        let taskID = $(this).data("id"); // Get Task ID from the button
+
+        // Fetch task details dynamically from the backend
+        $.ajax({
+          url: `http://localhost:3000/get-task/${taskID}`, // API endpoint to get single task
+          type: "GET",
+          success: function (task) {
+            // Fill the form with fetched data
+            $("#editTaskId").val(task._id);
+            $("#editTaskTitle").val(task.taskTitle);
+            $("#editTaskDeadline").val(task.deadline);
+            $("#editTaskTeam").val(task.assignedTo);
+
+            // Show the modal
+            $("#editTaskModal").modal("show");
+          },
+          error: function () {
+            alert("Error fetching task details!");
+          },
+        });
+      });
+
+      // Handle form submission for editing a task
+      $("#editTaskForm").submit(function (event) {
+        event.preventDefault();
+
+        let taskID = $("#editTaskId").val();
+
+        let formData = new FormData();
+        formData.append("taskTitle", $("#editTaskTitle").val());
+        formData.append("deadline", $("#editTaskDeadline").val());
+        formData.append("assignedTo", $("#editTaskTeam").val());
+
+        let fileInput = $("#editTaskAssets")[0].files[0];
+        if (fileInput) {
+          formData.append("taskAssets", fileInput);
+        }
+
+        $.ajax({
+          url: `http://localhost:3000/update-task/${taskID}`,
+          type: "PUT",
+          data: formData,
+          processData: false,
+          contentType: false,
+          success: function (response) {
+            showToast("Task updated successfully!", "bg-success");
+            fetchTasks(); // Refresh the task list
+            $("#editTaskModal").modal("hide");
+          },
+          error: function (error) {
+            showToast("Error updating task! Please try again.");
+          },
+        });
+      });
+
+      // Handle form submission for adding a new task
+      $("#taskForm").submit(function (event) {
+        event.preventDefault();
+
+        let formData = new FormData();
+        formData.append("taskId", $("#taskID").val());
+        formData.append("taskTitle", $("#taskTitle").val());
+        formData.append("deadline", $("#taskDeadline").val());
+        formData.append("taskProgress", $("#taskProgress").val());
+        formData.append("assignedTo", $("#taskTeam").val());
+        let fileInput = $("#taskAssets")[0].files[0];
+        if (fileInput) {
+          formData.append("taskAssets", fileInput);
+        }
+
+        $.ajax({
+          url: "http://localhost:3000/add-task",
+          type: "POST",
+          data: formData,
+          processData: false,
+          contentType: false,
+          success: function (response) {
+            showToast("Task Created successful!", "bg-success");
+
+            // Fetch tasks on page load
+            fetchTasks();
+            $("#taskModal").modal("hide");
+            $("#taskForm")[0].reset();
+          },
+          error: function (error) {
+            showToast("Error adding task! Please try again.");
+          },
+        });
+      });
+
+      // Fetch Tasks Function
+      function fetchTasks() {
+        $.ajax({
+          url: "http://localhost:3000/get-tasks",
+          type: "GET",
+          success: function (tasks) {
+            // Check if tasks is an array and has no items
+            if (!Array.isArray(tasks) || tasks.length === 0) {
+              $("#taskTableBody").empty(); // Clear the table
+              $("#taskTableBody").append(
+                `<tr><td colspan="6" class="text-center">No tasks found.</td></tr>`
+              );
+              return; // Exit the function early
+            }
+
+            // If tasks are present, fetch teams to map team IDs to team names
+            $.ajax({
+              url: "http://localhost:3000/teams", // Endpoint to fetch teams
+              type: "GET",
+              success: function (teams) {
+                let teamMap = {};
+                teams.forEach((team) => {
+                  teamMap[team._id] = team.teamName; // Map team ID to team name (task field)
+                });
+
+                // Clear the table and populate it with tasks
+                $("#taskTableBody").empty();
+                tasks.forEach((task) => {
+                  let assetLink = task.assets
+                    ? `<a href="http://localhost:3000/uploads/${task.assets}" target="_blank">View File</a>`
+                    : "No File";
+                  let teamName = teamMap[task.assignedTo] || "Unknown Team"; // Get team name from map
+                  let row = `<tr>
+                                <td>${task.taskId}</td>
+                                <td>${task.taskTitle}</td>
+                                <td>${task.deadline}</td>
+                                <td>${teamName}</td>
+                                <td>${assetLink}</td>
+                                <td>
+                                  <button class='btn btn-warning btn-sm editTask' data-id="${task._id}">Edit</button>
+                                  <button class='btn btn-danger btn-sm deleteTask' data-id="${task._id}">Delete</button>
+                                </td>
+                              </tr>`;
+                  $("#taskTableBody").append(row);
+                });
+              },
+              error: function () {
+                // Handle team fetch error (optional)
+                console.error("Failed to load teams!");
+              },
+            });
+          },
+          error: function () {
+            // Handle task fetch error (optional)
+            console.error("Failed to load tasks!");
+          },
+        });
+      }
+
+      // Handle delete task
+      let taskToDelete = null; // Variable to store the task ID to delete
+
+      $(document).on("click", ".deleteTask", function () {
+        taskToDelete = $(this).data("id"); // Store the task ID
+        $("#deleteConfirmationModal").modal("show"); // Show the delete confirmation modal
+      });
+
+      // Handle delete confirmation
+      $("#confirmDeleteBtn").on("click", function () {
+        if (taskToDelete) {
+          $.ajax({
+            url: `http://localhost:3000/delete-task/${taskToDelete}`,
+            type: "DELETE",
+            success: function (response) {
+              showToast("Task Deleted Successfully", "bg-success");
+              fetchTasks(); // Refresh the task list
+            },
+            error: function () {
+              showToast("Error deleting task.");
+            },
+          });
+        }
+
+        // Close the modal
+        $("#deleteConfirmationModal").modal("hide");
+        taskToDelete = null; // Reset the task ID
+      });
+    });
+
+    // Edit Profile Functionality
+    $(document).ready(function () {
+        const userId = getCookie("userId");
+
+
+        // Fetch user profile data and populate the modal
+        function fetchProfileData() {
+          $.ajax({
+            url: `http://localhost:3000/profile/${userId}`,
+            method: "GET",
+            success: function (response) {
+              if (response.success) {
+                $("#editName").val(response.user.name);
+                $("#editEmail").val(response.user.email);
+                // $("#editPassword").val(response.user.password);
+              } else {
+                alert("Failed to fetch profile data");
+              }
+            },
+            error: function () {
+              alert("Error fetching profile data");
+            },
+          });
+        }
+
+        // Open modal and fetch profile data
+        $("#editProfileBtn").click(function () {
+          fetchProfileData();
+          $("#editProfileModal").modal("show");
+        });
+
+        // Update profile data
+        $("#editProfileForm").submit(function (event) {
+          event.preventDefault();
+          const name = $("#editName").val();
+          const email = $("#editEmail").val();
+          // const password = $("#editPassword").val();
+
+          $.ajax({
+            url: `http://localhost:3000/update-profile/${userId}`,
+            method: "PUT",
+            contentType: "application/json",
+            data: JSON.stringify({ name, email }),
+            success: function (response) {
+              if (response.success) {
+                showToast("Profile updated successfully!", "bg-success");
+                $("#editProfileModal").modal("hide");
+              } else {
+                alert("Failed to update profile");
+              }
+            },
+            error: function () {
+              alert("Error updating profile");
+            },
+          });
+        });
+      });
+
+      // Change Password Functionality
+      $(document).ready(function () {
+        const userId = getCookie("userId");
+
+        // Open Change Password Modal
+        $("#changePasswordBtn").click(function () {
+           // Clear input fields when modal opens
+          $("#currentPassword").val("");
+          $("#newPassword").val("");
+          $("#confirmNewPassword").val("");
+          // Show the modal
+          $("#changePasswordModal").modal("show");
+        });
+
+        // Handle Change Password Form Submission
+        $("#changePasswordForm").submit(function (event) {
+          event.preventDefault();
+          const currentPassword = $("#currentPassword").val();
+          const newPassword = $("#newPassword").val();
+          const confirmNewPassword = $("#confirmNewPassword").val();
+
+          // Validate new password and confirm new password
+          if (newPassword !== confirmNewPassword) {
+            showToast("New password and confirm password do not match!", "bg-danger");
+            return;
+          }
+
+          // Send request to change password
+          $.ajax({
+            url: `http://localhost:3000/change-password/${userId}`,
+            method: "PUT",
+            contentType: "application/json",
+            data: JSON.stringify({
+              currentPassword,
+              newPassword,
+            }),
+            success: function (response) {
+              if (response.success) {
+                showToast("Password changed successfully!", "bg-success");
+                $("#changePasswordModal").modal("hide");
+              } else {
+                showToast(response.message || "Failed to change password!", "bg-danger");
+              }
+            },
+            error: function () {
+              showToast("Error changing password!", "bg-danger");
+            },
+          });
+        });
+      });
+
+      $(document).ready(function () {
+        const userId = getCookie("userId");
+
+        // Open Delete Account Modal
+        $("#deleteAccountBtn").click(function () {
+          $("#deleteAccountModal").modal("show");
+        });
+
+        // Handle Account Deletion
+        $("#confirmDeleteAccount").click(function () {
+          $.ajax({
+            url: `http://localhost:3000/delete-account/${userId}`,
+            method: "DELETE",
+            success: function (response) {
+              if (response.success) {
+                showToast("Account deleted successfully!", "bg-success");
+                $("#deleteAccountModal").modal("hide");
+
+                // Redirect to login or homepage after deletion
+                setTimeout(() => {
+                  window.location.href = "../index.html"; // Redirect to login page
+                }, 2000);
+              } else {
+                showToast(response.message || "Failed to delete account!", "bg-danger");
+              }
+            },
+            error: function () {
+              showToast("Error deleting account!", "bg-danger");
+            },
+          });
+        });
+      });
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

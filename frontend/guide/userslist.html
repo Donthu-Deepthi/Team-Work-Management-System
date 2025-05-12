@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sidebar</title>
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Bootstrap Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
+    />
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <style>
+
+      /* Sidebar Styles */
+      .sidebar {
+        width: 250px;
+        height: 100vh;
+        background-color: #1e3a5f;
+        padding: 15px;
+        position: fixed;
+        transition: transform 0.3s ease;
+        z-index: 1000;
+      }
+
+      .sidebar.collapsed {
+        transform: translateX(-100%);
+      }
+
+      .sidebar a {
+        color: white;
+        text-decoration: none;
+        display: block;
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 5px;
+      }
+
+      .sidebar a:hover {
+        background-color: #172c4d;
+      }
+
+      .sidebar .active {
+        background-color: #121f33;
+      }
+
+      .sidebar img {
+        width: 40px;
+        margin-right: 10px;
+      }
+
+      /* Content Area */
+      .content {
+        margin-left: 250px;
+        padding: 20px;
+        transition: margin-left 0.3s ease;
+      }
+
+      .content.expanded {
+        margin-left: 0;
+      }
+
+      .card {
+        transition: transform 0.3s;
+      }
+
+      .card:hover {
+        transform: scale(1.05);
+      }
+
+      /* Dropdown Styles */
+      .dropdown-menu {
+        background-color: #1e3a5f;
+        border: none;
+      }
+
+      .dropdown-item {
+        color: white;
+      }
+
+      .dropdown-item:hover {
+        background-color: #172c4d;
+        color: white;
+      }
+
+      .readonly-input {
+        background-color: #eaeaeb;
+        cursor: not-allowed;
+      }
+
+      /* Mobile Toggle Button */
+      .sidebar-toggle {
+        display: none;
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        z-index: 1001;
+        background-color: #1e3a5f;
+        border: none;
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      /* Responsive Styles */
+      @media (max-width: 768px) {
+        .sidebar {
+          transform: translateX(-100%);
+        }
+
+        .sidebar.collapsed {
+          transform: translateX(0);
+        }
+
+        .content {
+          margin-left: 0;
+        }
+
+        .sidebar-toggle {
+          display: block;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <!-- Sidebar Toggle Button -->
+      <button class="sidebar-toggle" id="sidebarToggle">
+        <i class="bi bi-list"></i>
+      </button>
+
+      <!-- Sidebar -->
+      <div class="sidebar" id="sidebar">
+        <div class="d-flex align-items-center mb-4 mt-3">
+          <img src="../assets/logo.png" alt="Logo" />
+          <span class="text-white fw-bold"><b><h3>TeamWork</h3></b></span>
+        </div>
+        <a href="dashboard.html"
+          ><i class="bi bi-house-door"></i> Dashboard</a
+        >
+        <a href="viewProgress.html"
+          ><i class="bi bi-bar-chart"></i> View Progress</a
+        >
+        <a href="individualProgress.html"
+          ><i class="bi bi-bar-chart"></i> Individual Progress</a
+        >
+        <a href="userslist.html" class="active"><i class="bi bi-people"></i> Users List</a>
+        <a href="tasks.html"><i class="bi bi-list-task"></i> Assigning Tasks</a>
+        <a href="#" id="logoutBtn"><i class="bi bi-box-arrow-right"></i> Sign Out</a>
+        <div class="dropdown">
+          <a
+            href="#"
+            class="dropdown-toggle"
+            id="settingsDropdown"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            <i class="bi bi-gear"></i> Settings
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="settingsDropdown">
+            <li>
+              <a class="dropdown-item" href="#" id="editProfileBtn"
+                >View Profile</a
+              >
+            </li>
+            <li>
+              <a class="dropdown-item" href="#" id="changePasswordBtn"
+                >Change Password</a
+              >
+            </li>
+            <li>
+              <a class="dropdown-item" href="#" id="deleteAccountBtn"
+                >Delete Account</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="content" id="content">
+        <div class="container-fluid mt-4">
+          <ul class="nav nav-tabs">
+            <li class="nav-item">
+              <a class="nav-link active" id="users-tab">Users</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" id="teams-tab">Teams</a>
+            </li>
+          </ul>
+
+          <!-- Users Section -->
+          <div id="users-section" class="mt-3">
+            <h3>Users List</h3>
+            <div class="row g-3 mt-3" id="users-container"></div>
+          </div>
+
+          <!-- Teams Section -->
+          <div id="teams-section" style="display: none">
+            <div class="d-flex justify-content-between align-items-center mt-3">
+              <h3>Teams List</h3>
+              <button
+                class="btn btn-primary"
+                data-bs-toggle="modal"
+                data-bs-target="#addTeamModal"
+              >
+                + Add Team
+              </button>
+            </div>
+            <div class="table-responsive">
+              <table class="table mt-3">
+                <thead>
+                  <tr>
+                    <th>Team ID</th>
+                    <th>Team Name</th>
+                    <th>Assigned Users</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="teams-table"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Team Modal -->
+    <div class="modal fade" id="addTeamModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Add Team</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form id="addTeamForm">
+              <div class="mb-3">
+                <label class="form-label">Team ID</label>
+                <input type="text" class="form-control" id="teamId" required />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Team Name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="teamName"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Assign Users</label>
+                <select class="form-control" id="assignUsers" multiple>
+                  <option value="" disabled>
+                    Hold Ctrl (Windows) or Cmd (Mac) to select multiple users
+                  </option>
+                </select>
+              </div>
+              <button type="submit" class="btn btn-primary">Save Team</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- View Modal -->
+    <div class="modal fade" id="viewModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">View Team</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <p><strong>Team ID:</strong> <span id="viewTeamID"></span></p>
+            <p><strong>Team Name:</strong> <span id="viewTeamName"></span></p>
+            <p>
+              <strong>Assigned To:</strong> <span id="viewAssignedTo"></span>
+            </p>
+            <p>
+              <strong>Created Date:</strong> <span id="viewCreatedDate"></span>
+            </p>
+            <p><strong>Deadline:</strong> <span id="viewDeadline"></span></p>
+            <p><strong>Progress:</strong> <span id="viewProgress"></span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Team Modal -->
+    <div class="modal fade" id="editTeamModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Edit Team</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form id="editTeamForm">
+              <input type="hidden" id="editTeamId" />
+              <div class="mb-3">
+                <label class="form-label">Team Name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="editTeamName"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Assign Users</label>
+                <select class="form-control" id="editAssignUsers" multiple>
+                  <option value="" disabled>
+                    Hold Ctrl (Windows) or Cmd (Mac) to select multiple users
+                  </option>
+                </select>
+              </div>
+              <button type="submit" class="btn btn-primary">Update Team</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Confirm Delete</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <p>Are you sure you want to delete this team?</p>
+            <input type="hidden" id="deleteTeamID" />
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" id="confirmDelete">
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Edit Profile Modal -->
+    <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <!-- Modal Header -->
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title" id="editProfileModalLabel">View Profile</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <!-- Modal Body -->
+          <div class="modal-body">
+            <form id="editProfileForm">
+              <!-- Name Field -->
+              <div class="mb-3">
+                <label for="editName" class="form-label fw-bold">Name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="editName"
+                  placeholder="Enter your name"
+                  required
+                />
+              </div>
+
+              <!-- Email Field -->
+              <div class="mb-3">
+                <label for="editEmail" class="form-label fw-bold">Email</label>
+                <input
+                  type="email"
+                  class="form-control readonly-input"
+                  id="editEmail"
+                  placeholder="Enter your email"
+                  readonly
+                  required
+                />
+              </div>
+
+              <!-- Submit Button -->
+              <div class="d-grid">
+                <button type="submit" class="btn btn-primary">
+                  <i class="bi bi-pencil-fill me-2"></i>Update Profile
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Modal Footer -->
+          <div class="modal-footer">
+            <small class="text-muted">Make sure your information is up to date.</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Change Password Modal -->
+    <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <!-- Modal Header -->
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title" id="changePasswordModalLabel">Change Password</h5>
+            <button
+              type="button"
+              class="btn-close btn-close-white"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+
+          <!-- Modal Body -->
+          <div class="modal-body">
+            <form id="changePasswordForm">
+              <!-- Current Password Field -->
+              <div class="mb-4">
+                <label for="currentPassword" class="form-label fw-bold">Current Password</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  id="currentPassword"
+                  placeholder="Enter your current password"
+                  required
+                />
+              </div>
+
+              <!-- New Password Field -->
+              <div class="mb-4">
+                <label for="newPassword" class="form-label fw-bold">New Password</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  id="newPassword"
+                  placeholder="Enter a new password"
+                  required
+                />
+              </div>
+
+              <!-- Confirm New Password Field -->
+              <div class="mb-4">
+                <label for="confirmNewPassword" class="form-label fw-bold">Confirm New Password</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  id="confirmNewPassword"
+                  placeholder="Re-enter your new password"
+                  required
+                />
+                <small class="form-text text-muted">Ensure both passwords match.</small>
+              </div>
+
+              <!-- Submit Button -->
+              <div class="d-grid">
+                <button type="submit" class="btn btn-primary">
+                  <i class="bi bi-key-fill me-2"></i>Change Password
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Modal Footer -->
+          <div class="modal-footer">
+            <small class="text-muted">For security reasons, avoid using easily guessable passwords.</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete Account Modal -->
+    <div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <!-- Modal Header -->
+          <div class="modal-header bg-danger text-white">
+            <h5 class="modal-title" id="deleteAccountLabel">
+              <i class="bi bi-exclamation-triangle-fill me-2"></i>Delete Account
+            </h5>
+            <button
+              type="button"
+              class="btn-close btn-close-white"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+
+          <!-- Modal Body -->
+          <div class="modal-body">
+            <p class="lead">
+              Are you sure you want to delete your account? This action <strong>cannot be undone</strong>.
+            </p>
+            <p class="text-muted">
+              All your data, including tasks, progress, and team information, will be permanently removed.
+            </p>
+          </div>
+
+          <!-- Modal Footer -->
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+              <i class="bi bi-x-circle me-2"></i>Cancel
+            </button>
+            <button type="button" class="btn btn-danger" id="confirmDeleteAccount">
+              <i class="bi bi-trash-fill me-2"></i>Delete Account
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+      <div
+        id="toastMessage"
+        class="toast align-items-center text-white bg-danger border-0"
+        role="alert"
+        aria-live="assertive"
+        aria-atomic="true"
+      >
+        <div class="d-flex">
+          <div class="toast-body"></div>
+          <button
+            type="button"
+            class="btn-close btn-close-white me-2 m-auto"
+            data-bs-dismiss="toast"
+            aria-label="Close"
+          ></button>
+        </div>
+      </div>
+    </div>
+
+    <script src="../assets/js/signout.js"></script>
+
+    <script>
+      // Toggle Sidebar on Mobile
+      document
+        .getElementById("sidebarToggle")
+        .addEventListener("click", function () {
+          const sidebar = document.getElementById("sidebar");
+          const content = document.getElementById("content");
+          sidebar.classList.toggle("collapsed");
+          content.classList.toggle("expanded");
+        });
+      // Event listener for the logout button
+      document.getElementById("logoutBtn").addEventListener("click", signOut);
+
+      function showToast(message, bgColor = "bg-danger") {
+        $("#toastMessage")
+          .removeClass("bg-danger bg-success")
+          .addClass(bgColor);
+        $("#toastMessage .toast-body").text(message);
+        let toast = new bootstrap.Toast(
+          document.getElementById("toastMessage")
+        );
+        toast.show();
+      }
+ 
+      $(document).ready(function () {
+        
+        const userRole = getCookie("userRole");
+        if (!userRole) {
+          // If the cookie exists, redirect based on user role
+          window.location.href = "../index.html";
+        }
+
+        function showToast(message, bgColor = "bg-danger") {
+          $("#toastMessage")
+            .removeClass("bg-danger bg-success")
+            .addClass(bgColor);
+          $("#toastMessage .toast-body").text(message);
+          let toast = new bootstrap.Toast(
+            document.getElementById("toastMessage")
+          );
+          toast.show();
+        }
+
+        // Fetch Users for Users List
+        function fetchUsers() {
+          $.get("http://localhost:3000/students", function (users) {
+            let usersContainer = $("#users-container").empty();
+            users.forEach((user) => {
+              usersContainer.append(`
+                      <div class="col-md-4">
+                        <div class="card p-3 shadow-sm">
+                          <h5>${user.name}</h5>
+                          <p><strong>Email:</strong> ${user.email}</p>
+                        </div>
+                      </div>`);
+            });
+          });
+        }
+
+        // Fetch Users for Assigning to Teams (only users not in any team)
+        function fetchUsersForDropdown() {
+          $.get("http://localhost:3000/users/not-in-teams", function (users) {
+            console.log("Users fetched for dropdown:", users); // Debugging log
+            let dropdown = $("#assignUsers").empty();
+            dropdown.append(
+              `<option value="" disabled>Select users to assign</option>`
+            );
+            users.forEach((user) => {
+              dropdown.append(
+                `<option value="${user._id}">${user.name}</option>`
+              );
+            });
+          }).fail(function (error) {
+            console.error("Error fetching users for dropdown:", error.responseJSON || error); // Debugging log
+          });
+        }
+
+        function loadUsers() {
+          $.get("http://localhost:3000/students", function (users) {
+            let userOptions = users
+              .map(
+                (user) => `<option value="${user._id}">${user.name}</option>`
+              )
+              .join("");
+            $("#assignUsers, #editAssignUsers").html(userOptions);
+          });
+        }
+
+        loadUsers();
+
+        // Fetch Teams
+        function fetchTeams() {
+          $.get("http://localhost:3000/teams", function (teams) {
+            let teamsTable = $("#teams-table").empty();
+            teams.forEach((team) => {
+              let assignedEmails = team.assignedTo
+                .map((user) => user._id?.email || "No email")
+                .join(", ");
+              teamsTable.append(`
+                                  <tr>
+                                      <td>${team.teamID}</td>
+                                      <td>${team.teamName}</td>
+                                      <td>${assignedEmails}</td>
+                                      <td>
+                                          <button class="btn btn-info btn-sm view-btn" data-id="${team._id}">View</button>
+                                          <button class="btn btn-warning btn-sm edit-btn" data-id="${team._id}">Edit</button>
+                                          <button class="btn btn-danger btn-sm delete-btn" data-id="${team._id}">Delete</button>
+                                      </td>
+                                  </tr>
+                              `);
+            });
+          });
+        }
+
+        // Add Team Form Submission
+        $("#addTeamForm").submit(function (e) {
+          e.preventDefault(); // Prevent default form submission
+
+          // Get the selected user IDs from the multi-select input
+          const selectedUserIds = $("#assignUsers").val() || [];
+
+          // Prepare the assignedTo array in the correct format
+          const assignedTo = selectedUserIds.map(userId => ({
+            _id: userId, // Ensure this matches the student ID format
+            subtasks: [], // Initialize empty subtasks array
+            totalSubtasks: 0, // Initialize total subtasks
+            completedSubtasks: 0, // Initialize completed subtasks
+            progress: 0, // Initialize progress
+          }));
+
+          let newTeam = {
+            teamID: $("#teamId").val(), // Ensure this matches the backend field
+            teamName: $("#teamName").val(), // Ensure this matches the backend field
+            assignedTo: assignedTo, // Send the formatted assignedTo array
+          };
+
+          console.log("Sending Data:", newTeam); // Debugging log
+
+          $.ajax({
+            url: "http://localhost:3000/add-team",
+            type: "POST",
+            contentType: "application/json", // Ensure JSON format
+            data: JSON.stringify(newTeam), // Convert to JSON string
+            success: function (response) {
+              showToast("Team added successfully! ✅", "bg-success");
+              $("#addTeamModal").modal("hide"); // Close modal
+              fetchTeams(); // Refresh teams list
+            },
+            error: function (xhr, status, error) {
+              showToast("Failed to add team ❌");
+              console.error("Error:", xhr.responseText);
+            },
+          });
+        });
+
+        // View Team
+        $(document).on("click", ".view-btn", function () {
+          let teamID = $(this).data("id");
+          $.get(`http://localhost:3000/teams/${teamID}`, function (team) {
+            $("#viewTeamID").text(team.teamID);
+            $("#viewTeamName").text(team.teamName);
+            $("#viewAssignedTo").text(
+              team.assignedTo.map((user) => user._id?.email || "No email").join(", ")
+            );
+            $("#viewCreatedDate").text(
+              new Date(team.createdDate).toLocaleString()
+            );
+            $("#viewDeadline").text(new Date(team.deadline).toLocaleString());
+            $("#viewProgress").text(team.progress);
+            $("#viewModal").modal("show");
+          });
+        });
+
+        // Open Edit Team Modal and load existing data
+        $(document).on("click", ".edit-btn", function () {
+          let teamId = $(this).data("id");
+
+          $.get(`http://localhost:3000/teams/${teamId}`, function (team) {
+            // Populate form fields with team data
+            $("#editTeamId").val(team._id);
+            $("#editTeamName").val(team.teamName);
+            
+            // Extract assigned user names and IDs
+            const assignedUserIds = team.assignedTo.map(user => user._id._id.toString()); // Extract user IDs
+
+            // Select assigned users
+            $("#editAssignUsers option").each(function () {
+              if (assignedUserIds.includes($(this).val())) {
+                $(this).prop("selected", true);
+              } else {
+                $(this).prop("selected", false);
+              }
+            });
+
+            // Show the modal
+            $("#editTeamModal").modal("show");
+          });
+        });
+
+        // Submit Edit Team Form
+        $("#editTeamForm").submit(function (e) {
+          e.preventDefault();
+
+          let teamId = $("#editTeamId").val();
+
+          // Get the selected user IDs from the multi-select input
+          const selectedUserIds = $("#editAssignUsers").val() || [];
+
+          // Prepare the assignedTo array in the correct format
+          const assignedTo = selectedUserIds.map(userId => ({
+            _id: userId, // Ensure this matches the student ID format
+            subtasks: [], // Initialize empty subtasks array
+            totalSubtasks: 0, // Initialize total subtasks
+            completedSubtasks: 0, // Initialize completed subtasks
+            progress: 0, // Initialize progress
+          }));
+
+          // Prepare the updated team data
+          let updatedTeam = {
+            teamName: $("#editTeamName").val(),
+            assignedTo: assignedTo,
+            deadline: $("#editDeadline").val(),
+          };
+
+          // Send the data to the backend
+          $.ajax({
+            url: `http://localhost:3000/teams/${teamId}`,
+            type: "PUT",
+            contentType: "application/json",
+            data: JSON.stringify(updatedTeam),
+            success: function () {
+              showToast("Team updated successfully! ✅", "bg-success");
+              $("#editTeamModal").modal("hide"); // Close modal
+              fetchTeams(); // Refresh teams list
+            },
+            error: function (xhr) {
+              showToast("Failed to update team ❌");
+              console.error("Error:", xhr.responseText);
+            },
+          });
+        });
+        
+        // Submit Edit Team Form
+        $("#editTeamForm").submit(function (e) {
+          e.preventDefault();
+
+          let teamId = $("#editTeamId").val();
+
+          // Get the selected user IDs from the multi-select input
+          const selectedUserIds = $("#editAssignUsers").val() || [];
+
+          // Prepare the assignedTo array in the correct format
+          const assignedTo = selectedUserIds.map(userId => ({
+            _id: userId, // Ensure this matches the student ID format
+            subtasks: [], // Initialize empty subtasks array
+            totalSubtasks: 0, // Initialize total subtasks
+            completedSubtasks: 0, // Initialize completed subtasks
+            progress: 0, // Initialize progress
+          }));
+
+          // Prepare the updated team data
+          let updatedTeam = {
+            teamName: $("#editTeamName").val(),
+            assignedTo: assignedTo,
+            deadline: $("#editDeadline").val(),
+          };
+
+          // Send the data to the backend
+          $.ajax({
+            url: `http://localhost:3000/teams/${teamId}`,
+            type: "PUT",
+            contentType: "application/json",
+            data: JSON.stringify(updatedTeam),
+            success: function () {
+              showToast("Team updated successfully! ✅", "bg-success");
+              $("#editTeamModal").modal("hide"); // Close modal
+              fetchTeams(); // Refresh teams list
+            },
+            error: function (xhr) {
+              showToast("Failed to update team ❌");
+              console.error("Error:", xhr.responseText);
+            },
+          });
+        });
+
+        // Save Edited Team
+        $("#saveChanges").click(function () {
+          let teamID = $("#editTeamID").val();
+          let updatedTask = $("#editTask").val();
+          let updatedProgress = $("#editProgress").val();
+
+          $.ajax({
+            url: `http://localhost:3000/teams/${teamID}`,
+            type: "PUT",
+            contentType: "application/json",
+            data: JSON.stringify({
+              task: updatedTask,
+              progress: updatedProgress,
+            }),
+            success: function () {
+              $("#editModal").modal("hide");
+              fetchTeams();
+            },
+          });
+        });
+
+        // Delete Team
+        $(document).on("click", ".delete-btn", function () {
+          let teamID = $(this).data("id");
+          $("#deleteTeamID").val(teamID);
+          $("#deleteModal").modal("show");
+        });
+
+        // Confirm Delete
+        $("#confirmDelete").click(function () {
+          let teamID = $("#deleteTeamID").val();
+          $.ajax({
+            url: `http://localhost:3000/delete-team/${teamID}`,
+            type: "DELETE",
+            success: function () {
+              $("#deleteModal").modal("hide");
+              fetchTeams();
+            },
+          });
+        });
+
+        // Tab Switching with Functionality
+        $("#users-tab").click(() => {
+          $("#users-section").show();
+          $("#teams-section").hide();
+          $("#users-tab").addClass("active");
+          $("#teams-tab").removeClass("active");
+          fetchUsers(); // Fetch Users on tab click
+        });
+
+        $("#teams-tab").click(() => {
+          $("#teams-section").show();
+          $("#users-section").hide();
+          $("#teams-tab").addClass("active");
+          $("#users-tab").removeClass("active");
+          fetchTeams(); // Fetch Teams on tab click
+          fetchUsersForDropdown(); // Fetch Users for Assign Dropdown
+        });
+
+        // Initial Load
+        fetchUsers();
+      });
+
+      // Edit Profile Functionality
+      $(document).ready(function () {
+        const userId = getCookie("userId");
+
+
+        // Fetch user profile data and populate the modal
+        function fetchProfileData() {
+          $.ajax({
+            url: `http://localhost:3000/profile/${userId}`,
+            method: "GET",
+            success: function (response) {
+              if (response.success) {
+                $("#editName").val(response.user.name);
+                $("#editEmail").val(response.user.email);
+                // $("#editPassword").val(response.user.password);
+              } else {
+                alert("Failed to fetch profile data");
+              }
+            },
+            error: function () {
+              alert("Error fetching profile data");
+            },
+          });
+        }
+
+        // Open modal and fetch profile data
+        $("#editProfileBtn").click(function () {
+          fetchProfileData();
+          $("#editProfileModal").modal("show");
+        });
+
+        // Update profile data
+        $("#editProfileForm").submit(function (event) {
+          event.preventDefault();
+          const name = $("#editName").val();
+          const email = $("#editEmail").val();
+          // const password = $("#editPassword").val();
+
+          $.ajax({
+            url: `http://localhost:3000/update-profile/${userId}`,
+            method: "PUT",
+            contentType: "application/json",
+            data: JSON.stringify({ name, email }),
+            success: function (response) {
+              if (response.success) {
+                showToast("Profile updated successfully!", "bg-success");
+                $("#editProfileModal").modal("hide");
+              } else {
+                alert("Failed to update profile");
+              }
+            },
+            error: function () {
+              alert("Error updating profile");
+            },
+          });
+        });
+      });
+
+      // Change Password Functionality
+      $(document).ready(function () {
+        const userId = getCookie("userId");
+
+        // Open Change Password Modal
+        $("#changePasswordBtn").click(function () {
+           // Clear input fields when modal opens
+          $("#currentPassword").val("");
+          $("#newPassword").val("");
+          $("#confirmNewPassword").val("");
+          // Show the modal
+          $("#changePasswordModal").modal("show");
+        });
+
+        // Handle Change Password Form Submission
+        $("#changePasswordForm").submit(function (event) {
+          event.preventDefault();
+          const currentPassword = $("#currentPassword").val();
+          const newPassword = $("#newPassword").val();
+          const confirmNewPassword = $("#confirmNewPassword").val();
+
+          // Validate new password and confirm new password
+          if (newPassword !== confirmNewPassword) {
+            showToast("New password and confirm password do not match!", "bg-danger");
+            return;
+          }
+
+          // Send request to change password
+          $.ajax({
+            url: `http://localhost:3000/change-password/${userId}`,
+            method: "PUT",
+            contentType: "application/json",
+            data: JSON.stringify({
+              currentPassword,
+              newPassword,
+            }),
+            success: function (response) {
+              if (response.success) {
+                showToast("Password changed successfully!", "bg-success");
+                $("#changePasswordModal").modal("hide");
+              } else {
+                showToast(response.message || "Failed to change password!", "bg-danger");
+              }
+            },
+            error: function () {
+              showToast("Error changing password!", "bg-danger");
+            },
+          });
+        });
+      });
+
+      $(document).ready(function () {
+        const userId = getCookie("userId");
+
+        // Open Delete Account Modal
+        $("#deleteAccountBtn").click(function () {
+          $("#deleteAccountModal").modal("show");
+        });
+
+        // Handle Account Deletion
+        $("#confirmDeleteAccount").click(function () {
+          $.ajax({
+            url: `http://localhost:3000/delete-account/${userId}`,
+            method: "DELETE",
+            success: function (response) {
+              if (response.success) {
+                showToast("Account deleted successfully!", "bg-success");
+                $("#deleteAccountModal").modal("hide");
+
+                // Redirect to login or homepage after deletion
+                setTimeout(() => {
+                  window.location.href = "../index.html"; // Redirect to login page
+                }, 2000);
+              } else {
+                showToast(response.message || "Failed to delete account!", "bg-danger");
+              }
+            },
+            error: function () {
+              showToast("Error deleting account!", "bg-danger");
+            },
+          });
+        });
+      });
+    </script>
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

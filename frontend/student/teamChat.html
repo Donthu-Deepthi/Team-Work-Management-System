@@ -1,0 +1,794 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sidebar</title>
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Bootstrap Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+    />
+
+    <style>
+      /* Sidebar Styles */
+      .sidebar {
+        width: 260px;
+        height: 100vh;
+        background-color: #1e3a5f;
+        padding: 20px;
+        position: fixed;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.3s ease;
+        z-index: 1000;
+      }
+
+      .sidebar.collapsed {
+        transform: translateX(-100%);
+      }
+
+      .sidebar a {
+        color: white;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        padding: 12px;
+        border-radius: 5px;
+        margin-bottom: 8px;
+      }
+
+      .sidebar a i {
+        margin-right: 10px;
+        font-size: 18px;
+      }
+
+      .sidebar a:hover {
+        background-color: #172c4d;
+      }
+
+      .sidebar .active {
+        background-color: #121f33;
+      }
+
+      .sidebar .logo {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .sidebar img {
+        width: 45px;
+        height: 45px;
+        margin-right: 10px;
+        border-radius: 5px;
+        object-fit: cover;
+      }
+
+      /* Content Styles */
+      .content {
+        margin-left: 260px;
+        padding: 20px;
+        transition: margin-left 0.3s ease;
+      }
+
+      .content.expanded {
+        margin-left: 0;
+      }
+
+      /* Dropdown Styles */
+      .dropdown-menu {
+        background-color: #1e3a5f;
+        border: none;
+      }
+
+      .dropdown-item {
+        color: white;
+      }
+
+      .dropdown-item:hover {
+        background-color: #172c4d;
+        color: white;
+      }
+
+      .readonly-input {
+        background-color: #eaeaeb;
+        cursor: not-allowed;
+      }
+
+      /* Chat Styles */
+      .chat-container {
+        height: 70vh;
+        overflow-y: auto;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 10px;
+        margin-bottom: 20px;
+        background-color: #f9f9f9;
+      }
+
+      .message {
+        margin-bottom: 10px;
+        padding: 10px;
+        border-radius: 5px;
+        background-color: #e9ecef;
+      }
+
+      .message.sender {
+        background-color: #d1e7dd;
+        margin-left: auto;
+        margin-right: 0;
+        width: fit-content;
+      }
+
+      .message.receiver {
+        background-color: #f8d7da;
+        margin-right: auto;
+        margin-left: 0;
+        width: fit-content;
+      }
+
+      .message .sender-name {
+        font-weight: bold;
+        font-size: 0.9em;
+        color: #333;
+      }
+
+      .message .timestamp {
+        font-size: 0.8em;
+        color: #666;
+      }
+
+      /* Mobile Toggle Button */
+      .sidebar-toggle {
+        display: none;
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        z-index: 1001;
+        background-color: #1e3a5f;
+        border: none;
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      /* Responsive Styles */
+      @media (max-width: 768px) {
+        .sidebar {
+          transform: translateX(-100%);
+        }
+
+        .sidebar.collapsed {
+          transform: translateX(0);
+        }
+
+        .content {
+          margin-left: 0;
+        }
+
+        .sidebar-toggle {
+          display: block;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <!-- Sidebar Toggle Button -->
+      <button class="sidebar-toggle" id="sidebarToggle">
+        <i class="bi bi-list"></i>
+      </button>
+
+      <!-- Sidebar -->
+      <div class="sidebar" id="sidebar">
+        <div class="d-flex align-items-center mb-4">
+          <img src="../assets/logo.png" alt="Logo" />
+          <h3><span class="text-white fw-bold">TeamWork</span></h3>
+        </div>
+        <a href="dashboard.html"
+          ><i class="bi bi-house-door"></i> Dashboard</a
+        >
+        <a href="teamDetails.html"
+          ><i class="bi bi-bar-chart"></i> Team Details</a
+        >
+        <a href="teamDetails.html" class="active"
+          ><i class="bi bi-chat-dots"></i> Team Chat</a
+        >
+        <a href="guideDetails.html"
+          ><i class="bi bi-people"></i> Guide Details</a
+        >
+        <a href="#" id="logoutBtn"><i class="bi bi-box-arrow-right"></i> Sign Out</a>
+
+        <div class="dropdown">
+          <a
+            href="#"
+            class="dropdown-toggle"
+            id="settingsDropdown"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            <i class="bi bi-gear"></i> Settings
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="settingsDropdown">
+            <li>
+              <a class="dropdown-item" href="#" id="editProfileBtn"
+                >Edit Profile</a
+              >
+            </li>
+            <li>
+              <a class="dropdown-item" href="#" id="changePasswordBtn"
+                >Change Password</a
+              >
+            </li>
+            <li>
+              <a class="dropdown-item" href="#" id="deleteAccountBtn"
+                >Delete Account</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Edit Profile Modal -->
+    <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <!-- Modal Header -->
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title" id="editProfileModalLabel">View Profile</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <!-- Modal Body -->
+          <div class="modal-body">
+            <form id="editProfileForm">
+              <!-- Name Field -->
+              <div class="mb-3">
+                <label for="editName" class="form-label fw-bold">Name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="editName"
+                  placeholder="Enter your name"
+                  required
+                />
+              </div>
+
+              <!-- Email Field -->
+              <div class="mb-3">
+                <label for="editEmail" class="form-label fw-bold">Email</label>
+                <input
+                  type="email"
+                  class="form-control readonly-input"
+                  id="editEmail"
+                  placeholder="Enter your email"
+                  readonly
+                  required
+                />
+              </div>
+
+              <!-- Submit Button -->
+              <div class="d-grid">
+                <button type="submit" class="btn btn-primary">
+                  <i class="bi bi-pencil-fill me-2"></i>Update Profile
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Modal Footer -->
+          <div class="modal-footer">
+            <small class="text-muted">Make sure your information is up to date.</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Change Password Modal -->
+    <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <!-- Modal Header -->
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title" id="changePasswordModalLabel">Change Password</h5>
+            <button
+              type="button"
+              class="btn-close btn-close-white"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+
+          <!-- Modal Body -->
+          <div class="modal-body">
+            <form id="changePasswordForm">
+              <!-- Current Password Field -->
+              <div class="mb-4">
+                <label for="currentPassword" class="form-label fw-bold">Current Password</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  id="currentPassword"
+                  placeholder="Enter your current password"
+                  required
+                />
+              </div>
+
+              <!-- New Password Field -->
+              <div class="mb-4">
+                <label for="newPassword" class="form-label fw-bold">New Password</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  id="newPassword"
+                  placeholder="Enter a new password"
+                  required
+                />
+              </div>
+
+              <!-- Confirm New Password Field -->
+              <div class="mb-4">
+                <label for="confirmNewPassword" class="form-label fw-bold">Confirm New Password</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  id="confirmNewPassword"
+                  placeholder="Re-enter your new password"
+                  required
+                />
+                <small class="form-text text-muted">Ensure both passwords match.</small>
+              </div>
+
+              <!-- Submit Button -->
+              <div class="d-grid">
+                <button type="submit" class="btn btn-primary">
+                  <i class="bi bi-key-fill me-2"></i>Change Password
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Modal Footer -->
+          <div class="modal-footer">
+            <small class="text-muted">For security reasons, avoid using easily guessable passwords.</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete Account Modal -->
+    <div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <!-- Modal Header -->
+          <div class="modal-header bg-danger text-white">
+            <h5 class="modal-title" id="deleteAccountLabel">
+              <i class="bi bi-exclamation-triangle-fill me-2"></i>Delete Account
+            </h5>
+            <button
+              type="button"
+              class="btn-close btn-close-white"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+
+          <!-- Modal Body -->
+          <div class="modal-body">
+            <p class="lead">
+              Are you sure you want to delete your account? This action <strong>cannot be undone</strong>.
+            </p>
+            <p class="text-muted">
+              All your data, including tasks, progress, and team information, will be permanently removed.
+            </p>
+          </div>
+
+          <!-- Modal Footer -->
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+              <i class="bi bi-x-circle me-2"></i>Cancel
+            </button>
+            <button type="button" class="btn btn-danger" id="confirmDeleteAccount">
+              <i class="bi bi-trash-fill me-2"></i>Delete Account
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+      <div
+        id="toastMessage"
+        class="toast align-items-center text-white bg-danger border-0"
+        role="alert"
+        aria-live="assertive"
+        aria-atomic="true"
+      >
+        <div class="d-flex">
+          <div class="toast-body"></div>
+          <button
+            type="button"
+            class="btn-close btn-close-white me-2 m-auto"
+            data-bs-dismiss="toast"
+            aria-label="Close"
+          ></button>
+        </div>
+      </div>
+    </div>
+
+
+      <!-- Content -->
+      <div class="content" id="content">
+        <div class="container mt-4">
+          <h3>Team Chat</h3>
+          <div class="chat-container" id="chat-container">
+            <!-- Chat messages will be dynamically inserted here -->
+          </div>
+          <div class="input-group mb-3">
+            <input
+              type="text"
+              id="message-input"
+              class="form-control"
+              placeholder="Type your message..."
+            />
+            <button class="btn btn-primary" id="send-message">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+</div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="../assets/js/signout.js"></script>
+
+    <script>
+        // Utility functions for handling cookies
+      function setCookie(name, value, days = 7) {
+        const date = new Date();
+        date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+        const expires = "expires=" + date.toUTCString();
+        document.cookie = name + "=" + value + ";" + expires + ";path=/";
+      }
+
+      function getCookie(name) {
+        const cookieName = name + "=";
+        const decodedCookie = decodeURIComponent(document.cookie);
+        const cookieArray = decodedCookie.split(";");
+        for (let i = 0; i < cookieArray.length; i++) {
+          let cookie = cookieArray[i];
+          while (cookie.charAt(0) === " ") {
+            cookie = cookie.substring(1);
+          }
+          if (cookie.indexOf(cookieName) === 0) {
+            return cookie.substring(cookieName.length, cookie.length);
+          }
+        }
+        return "";
+      }
+
+      // Toggle Sidebar on Mobile
+      document
+        .getElementById("sidebarToggle")
+        .addEventListener("click", function () {
+          const sidebar = document.getElementById("sidebar");
+          const content = document.getElementById("content");
+          sidebar.classList.toggle("collapsed");
+          content.classList.toggle("expanded");
+        });
+      // Event listener for the logout button
+      document.getElementById("logoutBtn").addEventListener("click", signOut);
+
+      function showToast(message, bgColor = "bg-danger") {
+          $("#toastMessage")
+            .removeClass("bg-danger bg-success")
+            .addClass(bgColor);
+          $("#toastMessage .toast-body").text(message);
+          let toast = new bootstrap.Toast(
+            document.getElementById("toastMessage")
+          );
+          toast.show();
+        }
+
+        $(document).ready(function () {
+  const userRole = getCookie("userRole");
+  if (!userRole) {
+    window.location.href = "../index.html";
+  }
+
+  const userId = getCookie("userId");
+
+  // Fetch the user's name (senderName) using the userId
+  function fetchSenderName(userId) {
+    return new Promise((resolve, reject) => {
+      $.ajax({
+        url: `http://localhost:3000/user/${userId}`,
+        method: "GET",
+        success: function (response) {
+          resolve(response.name); // Resolve with the user's name
+        },
+        error: function (xhr, status, error) {
+          reject("Failed to fetch sender name: " + (xhr.responseJSON?.error || "Unknown error"));
+        },
+      });
+    });
+  }
+
+  // Fetch the team ID for the user
+  $.ajax({
+    url: `http://localhost:3000/getTeamByUser/${userId}`,
+    method: "GET",
+    success: function (teams) {
+      if (teams.length > 0) {
+        const teamId = teams[0]._id; // Use the correct field for team ID
+        setCookie("teamId", teamId); // Store teamId in cookies
+
+        // Function to load chat messages
+        function loadChatMessages() {
+          $.ajax({
+            url: `http://localhost:3000/chat/${teamId}`,
+            method: "GET",
+            success: function (messages) {
+              const chatContainer = $("#chat-container");
+              chatContainer.empty();
+              messages.forEach((message) => {
+                const messageClass =
+                  message.sender._id === userId ? "sender" : "receiver";
+                const messageElement = `
+                  <div class="message ${messageClass}">
+                    <div class="sender-name">${message.sender.name}</div>
+                    <div>${message.message}</div>
+                    <div class="timestamp">${new Date(message.timestamp).toLocaleString()}</div>
+                  </div>
+                `;
+                chatContainer.append(messageElement);
+              });
+              chatContainer.scrollTop(chatContainer[0].scrollHeight); // Scroll to the bottom
+            },
+            error: function (xhr, status, error) {
+              alert("Failed to load chat messages: " + (xhr.responseJSON?.error || "Unknown error"));
+            },
+          });
+        }
+
+        // Function to send a message
+        $("#send-message").click(async function () {
+          const message = $("#message-input").val().trim();
+          if (message) {
+            const teamId = getCookie("teamId");
+            const userId = getCookie("userId");
+
+            try {
+              // Fetch the sender's name using the userId
+              const senderName = await fetchSenderName(userId);
+
+              // Debugging: Log the values to the console
+              console.log("teamId:", teamId);
+              console.log("userId:", userId);
+              console.log("senderName:", senderName);
+              console.log("message:", message);
+
+              // Send the request
+              $.ajax({
+                url: "http://localhost:3000/chat",
+                method: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({
+                  teamId: teamId,
+                  senderId: userId,
+                  senderName: senderName,
+                  message: message,
+                }),
+                success: function (response) {
+                  console.log("Message sent successfully:", response);
+                  $("#message-input").val(""); // Clear input field
+                  loadChatMessages(); // Reload messages
+                },
+                error: function (xhr, status, error) {
+                  console.error("Failed to send message:", xhr.responseJSON || error);
+                  alert("Failed to send message: " + (xhr.responseJSON?.error || "Unknown error"));
+                },
+              });
+            } catch (error) {
+              console.error(error);
+              alert(error);
+            }
+          }
+        });
+
+        // Load chat messages on page load
+        loadChatMessages();
+
+        // Polling to refresh chat messages every 5 seconds
+        setInterval(loadChatMessages, 5000);
+      } else {
+        const chatContainer = $("#chat-container");
+        chatContainer.empty(); // Clear any existing messages
+        chatContainer.append(`
+          <div class="no-team-message">
+            You are not part of any team.
+          </div>
+        `);
+
+      // Disable the message input and send button
+      $("#message-input").prop("disabled", true);
+      $("#send-message").prop("disabled", true);
+      }
+    },
+    error: function (xhr, status, error) {
+      //alert("Failed to fetch team details: " + (xhr.responseJSON?.error || "Unknown error"));
+      const chatContainer = $("#chat-container");
+        chatContainer.empty(); // Clear any existing messages
+        chatContainer.append(`
+          <div class="no-team-message">
+            You are not part of any team.
+          </div>
+        `);
+
+      // Disable the message input and send button
+      $("#message-input").prop("disabled", true);
+      $("#send-message").prop("disabled", true);
+    },
+  });
+});
+      // Edit Profile Functionality
+      $(document).ready(function () {
+        const userId = getCookie("userId");
+
+
+        // Fetch user profile data and populate the modal
+        function fetchProfileData() {
+          $.ajax({
+            url: `http://localhost:3000/profile/${userId}`,
+            method: "GET",
+            success: function (response) {
+              if (response.success) {
+                $("#editName").val(response.user.name);
+                $("#editEmail").val(response.user.email);
+                // $("#editPassword").val(response.user.password);
+              } else {
+                alert("Failed to fetch profile data");
+              }
+            },
+            error: function () {
+              alert("Error fetching profile data");
+            },
+          });
+        }
+
+        // Open modal and fetch profile data
+        $("#editProfileBtn").click(function () {
+          fetchProfileData();
+          $("#editProfileModal").modal("show");
+        });
+
+        // Update profile data
+        $("#editProfileForm").submit(function (event) {
+          event.preventDefault();
+          const name = $("#editName").val();
+          const email = $("#editEmail").val();
+          // const password = $("#editPassword").val();
+
+          $.ajax({
+            url: `http://localhost:3000/update-profile/${userId}`,
+            method: "PUT",
+            contentType: "application/json",
+            data: JSON.stringify({ name, email }),
+            success: function (response) {
+              if (response.success) {
+                showToast("Profile updated successfully!", "bg-success");
+                $("#editProfileModal").modal("hide");
+              } else {
+                alert("Failed to update profile");
+              }
+            },
+            error: function () {
+              alert("Error updating profile");
+            },
+          });
+        });
+      });
+
+      // Change Password Functionality
+      $(document).ready(function () {
+        const userId = getCookie("userId");
+
+        // Open Change Password Modal
+        $("#changePasswordBtn").click(function () {
+           // Clear input fields when modal opens
+          $("#currentPassword").val("");
+          $("#newPassword").val("");
+          $("#confirmNewPassword").val("");
+          // Show the modal
+          $("#changePasswordModal").modal("show");
+        });
+
+        // Handle Change Password Form Submission
+        $("#changePasswordForm").submit(function (event) {
+          event.preventDefault();
+          const currentPassword = $("#currentPassword").val();
+          const newPassword = $("#newPassword").val();
+          const confirmNewPassword = $("#confirmNewPassword").val();
+
+          // Validate new password and confirm new password
+          if (newPassword !== confirmNewPassword) {
+            showToast("New password and confirm password do not match!", "bg-danger");
+            return;
+          }
+
+          // Send request to change password
+          $.ajax({
+            url: `http://localhost:3000/change-password/${userId}`,
+            method: "PUT",
+            contentType: "application/json",
+            data: JSON.stringify({
+              currentPassword,
+              newPassword,
+            }),
+            success: function (response) {
+              if (response.success) {
+                showToast("Password changed successfully!", "bg-success");
+                $("#changePasswordModal").modal("hide");
+              } else {
+                showToast(response.message || "Failed to change password!", "bg-danger");
+              }
+            },
+            error: function () {
+              showToast("Error changing password!", "bg-danger");
+            },
+          });
+        });
+      });
+
+      $(document).ready(function () {
+        const userId = getCookie("userId");
+
+        // Open Delete Account Modal
+        $("#deleteAccountBtn").click(function () {
+          $("#deleteAccountModal").modal("show");
+        });
+
+        // Handle Account Deletion
+        $("#confirmDeleteAccount").click(function () {
+          $.ajax({
+            url: `http://localhost:3000/delete-account/${userId}`,
+            method: "DELETE",
+            success: function (response) {
+              if (response.success) {
+                showToast("Account deleted successfully!", "bg-success");
+                $("#deleteAccountModal").modal("hide");
+
+                // Redirect to login or homepage after deletion
+                setTimeout(() => {
+                  window.location.href = "../index.html"; // Redirect to login page
+                }, 2000);
+              } else {
+                showToast(response.message || "Failed to delete account!", "bg-danger");
+              }
+            },
+            error: function () {
+              showToast("Error deleting account!", "bg-danger");
+            },
+          });
+        });
+      });
+    </script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

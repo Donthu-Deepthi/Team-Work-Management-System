@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sidebar</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
+    />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+      /* Sidebar Styles */
+      .sidebar {
+        width: 250px;
+        height: 100vh;
+        background-color: #1e3a5f;
+        padding: 15px;
+        position: fixed;
+        overflow-y: auto;
+        transition: transform 0.3s ease;
+        z-index: 1000;
+      }
+
+      .sidebar.collapsed {
+        transform: translateX(-100%);
+      }
+
+      .sidebar a {
+        color: white;
+        text-decoration: none;
+        display: block;
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 5px;
+      }
+
+      .sidebar a:hover {
+        background-color: #172c4d;
+      }
+
+      .sidebar .active {
+        background-color: #121f33;
+      }
+
+      .sidebar img {
+        width: 40px;
+        margin-right: 10px;
+      }
+
+      /* Content Area */
+      .content {
+        margin-left: 270px;
+        padding: 20px;
+        transition: margin-left 0.3s ease;
+      }
+
+      .content.expanded {
+        margin-left: 0;
+      }
+
+      /* Card Styling */
+      .card {
+        transition: transform 0.3s;
+        border-radius: 12px;
+        overflow: hidden;
+        height: 100%; /* Ensure all cards have the same height */
+        display: flex;
+        flex-direction: column;
+      }
+
+      .card:hover {
+        transform: scale(1.05);
+      }
+
+      .card-header {
+        background: #007bff;
+        color: white;
+        font-weight: bold;
+        text-align: center;
+        padding: 10px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+
+      .card-body {
+        flex: 1; /* Allow card body to grow and fill remaining space */
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between; /* Space out content */
+      }
+
+      .task-status {
+        display: inline-block;
+        padding: 5px 12px;
+        font-size: 14px;
+        font-weight: bold;
+        color: white;
+        border-radius: 12px;
+        text-transform: uppercase;
+        position: relative;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+
+      .to-do {
+        background-color: #dc3545;
+      }
+
+      .in-progress {
+        background-color: #ffc107;
+      }
+
+      .completed {
+        background-color: #28a745;
+      }
+      /* Dropdown Styles */
+      .dropdown-menu {
+        background-color: #1e3a5f;
+        border: none;
+      }
+
+      .dropdown-item {
+        color: white;
+      }
+
+      .dropdown-item:hover {
+        background-color: #172c4d;
+        color: white;
+      }
+
+      .readonly-input {
+        background-color: #eaeaeb;
+        cursor: not-allowed;
+      }
+
+      /* Mobile Toggle Button */
+      .sidebar-toggle {
+        display: none;
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        z-index: 1001;
+        background-color: #1e3a5f;
+        border: none;
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      /* Responsive Styles */
+      @media (max-width: 768px) {
+        .sidebar {
+          transform: translateX(-100%);
+        }
+
+        .sidebar.collapsed {
+          transform: translateX(0);
+        }
+
+        .content {
+          margin-left: 0;
+        }
+
+        .sidebar-toggle {
+          display: block;
+        }
+      }
+
+      @media (max-width: 576px) {
+        .dropdown-menu {
+          max-width: 100vw; /* Ensure dropdown doesn't exceed screen width */
+          left: 50% !important; /* Center the dropdown */
+          transform: translateX(-50%) !important; /* Center the dropdown */
+        }
+      }
+
+      /* Adjust card width for laptop screens */
+      @media (min-width: 992px) {
+        .col-lg-4 {
+          flex: 0 0 33.333333%;
+          max-width: 33.333333%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <!-- Sidebar Toggle Button -->
+      <button class="sidebar-toggle" id="sidebarToggle">
+        <i class="bi bi-list"></i>
+      </button>
+
+      <!-- Sidebar -->
+      <div class="sidebar" id="sidebar">
+        <div class="d-flex align-items-center mb-4 mt-3">
+          <img src="../assets/logo.png" alt="Logo" />
+          <span class="text-white fw-bold"><b><h3>TeamWork</h3></b></span>
+        </div>
+        <a href="dashboard.html"
+          ><i class="bi bi-house-door"></i> Dashboard</a
+        >
+        <a href="viewProgress.html" class="active"
+          ><i class="bi bi-bar-chart"></i> View Progress</a
+        >
+        <a href="individualProgress.html"
+          ><i class="bi bi-bar-chart"></i> Individual Progress</a
+        >
+        <a href="userslist.html"><i class="bi bi-people"></i> Users List</a>
+        <a href="tasks.html"><i class="bi bi-list-task"></i> Assigning Tasks</a>
+        <a href="#" id="logoutBtn"><i class="bi bi-box-arrow-right"></i> Sign Out</a>
+        <div class="dropdown">
+          <a
+            href="#"
+            class="dropdown-toggle"
+            id="settingsDropdown"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            <i class="bi bi-gear"></i> Settings
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="settingsDropdown">
+            <li>
+              <a class="dropdown-item" href="#" id="editProfileBtn"
+                >View Profile</a
+              >
+            </li>
+            <li>
+              <a class="dropdown-item" href="#" id="changePasswordBtn"
+                >Change Password</a
+              >
+            </li>
+            <li>
+              <a class="dropdown-item" href="#" id="deleteAccountBtn"
+                >Delete Account</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div class="content" id="content">
+        <div class="container mt-4">
+          <h3 class="mb-4">View Progress</h3>
+
+          <!-- Filter Dropdown -->
+          <div class="d-flex justify-content-end mb-3">
+            <label class="me-2 fw-bold">Filter by Progress:</label>
+            <div class="dropdown">
+              <button
+                class="btn btn-secondary dropdown-toggle"
+                type="button"
+                id="progressFilterDropdown"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                All
+              </button>
+              <ul
+                class="dropdown-menu dropdown-menu-end"
+                aria-labelledby="progressFilterDropdown"
+                style="max-width: 200px; overflow-y: auto;"
+              >
+                <li><a class="dropdown-item" href="#" data-value="all">All</a></li>
+                <li>
+                  <a class="dropdown-item" href="#" data-value="Completed">Completed</a>
+                </li>
+                <li>
+                  <a class="dropdown-item" href="#" data-value="In Progress">In Progress</a>
+                </li>
+                <li>
+                  <a class="dropdown-item" href="#" data-value="To Do">To Do</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Dynamic Cards -->
+          <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="taskContainer"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <!-- Modal Header -->
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title" id="editProfileModalLabel">View Profile</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <!-- Modal Body -->
+          <div class="modal-body">
+            <form id="editProfileForm">
+              <!-- Name Field -->
+              <div class="mb-3">
+                <label for="editName" class="form-label fw-bold">Name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="editName"
+                  placeholder="Enter your name"
+                  required
+                />
+              </div>
+
+              <!-- Email Field -->
+              <div class="mb-3">
+                <label for="editEmail" class="form-label fw-bold">Email</label>
+                <input
+                  type="email"
+                  class="form-control readonly-input"
+                  id="editEmail"
+                  placeholder="Enter your email"
+                  readonly
+                  required
+                />
+              </div>
+
+              <!-- Submit Button -->
+              <div class="d-grid">
+                <button type="submit" class="btn btn-primary">
+                  <i class="bi bi-pencil-fill me-2"></i>Update Profile
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Modal Footer -->
+          <div class="modal-footer">
+            <small class="text-muted">Make sure your information is up to date.</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Change Password Modal -->
+    <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <!-- Modal Header -->
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title" id="changePasswordModalLabel">Change Password</h5>
+            <button
+              type="button"
+              class="btn-close btn-close-white"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+
+          <!-- Modal Body -->
+          <div class="modal-body">
+            <form id="changePasswordForm">
+              <!-- Current Password Field -->
+              <div class="mb-4">
+                <label for="currentPassword" class="form-label fw-bold">Current Password</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  id="currentPassword"
+                  placeholder="Enter your current password"
+                  required
+                />
+              </div>
+
+              <!-- New Password Field -->
+              <div class="mb-4">
+                <label for="newPassword" class="form-label fw-bold">New Password</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  id="newPassword"
+                  placeholder="Enter a new password"
+                  required
+                />
+              </div>
+
+              <!-- Confirm New Password Field -->
+              <div class="mb-4">
+                <label for="confirmNewPassword" class="form-label fw-bold">Confirm New Password</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  id="confirmNewPassword"
+                  placeholder="Re-enter your new password"
+                  required
+                />
+                <small class="form-text text-muted">Ensure both passwords match.</small>
+              </div>
+
+              <!-- Submit Button -->
+              <div class="d-grid">
+                <button type="submit" class="btn btn-primary">
+                  <i class="bi bi-key-fill me-2"></i>Change Password
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Modal Footer -->
+          <div class="modal-footer">
+            <small class="text-muted">For security reasons, avoid using easily guessable passwords.</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete Account Modal -->
+    <div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <!-- Modal Header -->
+          <div class="modal-header bg-danger text-white">
+            <h5 class="modal-title" id="deleteAccountLabel">
+              <i class="bi bi-exclamation-triangle-fill me-2"></i>Delete Account
+            </h5>
+            <button
+              type="button"
+              class="btn-close btn-close-white"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+
+          <!-- Modal Body -->
+          <div class="modal-body">
+            <p class="lead">
+              Are you sure you want to delete your account? This action <strong>cannot be undone</strong>.
+            </p>
+            <p class="text-muted">
+              All your data, including tasks, progress, and team information, will be permanently removed.
+            </p>
+          </div>
+
+          <!-- Modal Footer -->
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+              <i class="bi bi-x-circle me-2"></i>Cancel
+            </button>
+            <button type="button" class="btn btn-danger" id="confirmDeleteAccount">
+              <i class="bi bi-trash-fill me-2"></i>Delete Account
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+      <div
+        id="toastMessage"
+        class="toast align-items-center text-white bg-danger border-0"
+        role="alert"
+        aria-live="assertive"
+        aria-atomic="true"
+      >
+        <div class="d-flex">
+          <div class="toast-body"></div>
+          <button
+            type="button"
+            class="btn-close btn-close-white me-2 m-auto"
+            data-bs-dismiss="toast"
+            aria-label="Close"
+          ></button>
+        </div>
+      </div>
+    </div>
+
+    <script src="../assets/js/signout.js"></script>
+
+    <script>
+      // Event listener for the logout button
+      document.getElementById("logoutBtn").addEventListener("click", signOut);
+
+      function showToast(message, bgColor = "bg-danger") {
+          $("#toastMessage")
+            .removeClass("bg-danger bg-success")
+            .addClass(bgColor);
+          $("#toastMessage .toast-body").text(message);
+          let toast = new bootstrap.Toast(
+            document.getElementById("toastMessage")
+          );
+          toast.show();
+        }
+
+      $(document).ready(function () {
+        const userRole = getCookie("userRole");
+        if (!userRole) {
+          // If the cookie exists, redirect based on user role
+          window.location.href = "../index.html";
+        }
+
+        // Toggle Sidebar on Mobile
+        document
+          .getElementById("sidebarToggle")
+          .addEventListener("click", function () {
+            const sidebar = document.getElementById("sidebar");
+            const content = document.getElementById("content");
+            sidebar.classList.toggle("collapsed");
+            content.classList.toggle("expanded");
+          });
+
+        function fetchProgressData() {
+          $.ajax({
+            url: "http://localhost:3000/teams",
+            method: "GET",
+            dataType: "json",
+            success: function (response) {
+              $("#taskContainer").empty(); // Clear previous data
+
+              response.forEach(function (team) {
+                let statusClass = team.progress
+                  .replace(/\s+/g, "-")
+                  .toLowerCase(); // Convert "To Do" to "to-do"
+
+                // Extract assigned user names or emails
+                const assignedUsers = team.assignedTo
+                  .map((user) => user._id?.email || "No email") // Use user._id.email if populated
+                  .join(", ");
+
+                let cardHtml = `
+                  <div class="col task-card" data-status="${team.progress}">
+                    <div class="card border-0 shadow">
+                      <div class="card-header text-center">${team.teamName}</div>
+                      <div class="card-body">
+                        <p><strong>Team ID:</strong> ${team.teamID}</p>
+                        <p><strong>Deadline:</strong> ${new Date(
+                          team.deadline
+                        ).toLocaleDateString()}</p>
+                        <p><strong>Assigned To:</strong> ${assignedUsers}</p>
+                        <span class="task-status ${statusClass}">${team.progress}</span>
+                      </div>
+                    </div>
+                  </div>`;
+                $("#taskContainer").append(cardHtml);
+              });
+            },
+            error: function (error) {
+              console.error("Error fetching data:", error);
+            },
+          });
+        }
+
+        // Fetch data initially
+        fetchProgressData();
+
+        // Filter functionality
+        $(".dropdown-item").click(function () {
+          const selectedValue = $(this).data("value");
+          $("#progressFilterDropdown").text($(this).text()); // Update button text
+          filterTasks(selectedValue); // Call your filter function
+        });
+
+        function filterTasks(status) {
+          $(".task-card").each(function () {
+            if (status === "all" || $(this).data("status") === status) {
+              $(this).show();
+            } else {
+              $(this).hide();
+            }
+          });
+        }
+      });
+
+      // Edit Profile Functionality
+      $(document).ready(function () {
+        const userId = getCookie("userId");
+
+
+        // Fetch user profile data and populate the modal
+        function fetchProfileData() {
+          $.ajax({
+            url: `http://localhost:3000/profile/${userId}`,
+            method: "GET",
+            success: function (response) {
+              if (response.success) {
+                $("#editName").val(response.user.name);
+                $("#editEmail").val(response.user.email);
+                // $("#editPassword").val(response.user.password);
+              } else {
+                alert("Failed to fetch profile data");
+              }
+            },
+            error: function () {
+              alert("Error fetching profile data");
+            },
+          });
+        }
+
+        // Open modal and fetch profile data
+        $("#editProfileBtn").click(function () {
+          fetchProfileData();
+          $("#editProfileModal").modal("show");
+        });
+
+        // Update profile data
+        $("#editProfileForm").submit(function (event) {
+          event.preventDefault();
+          const name = $("#editName").val();
+          const email = $("#editEmail").val();
+          // const password = $("#editPassword").val();
+
+          $.ajax({
+            url: `http://localhost:3000/update-profile/${userId}`,
+            method: "PUT",
+            contentType: "application/json",
+            data: JSON.stringify({ name, email }),
+            success: function (response) {
+              if (response.success) {
+                showToast("Profile updated successfully!", "bg-success");
+                $("#editProfileModal").modal("hide");
+              } else {
+                alert("Failed to update profile");
+              }
+            },
+            error: function () {
+              alert("Error updating profile");
+            },
+          });
+        });
+      });
+
+      // Change Password Functionality
+      $(document).ready(function () {
+        const userId = getCookie("userId");
+
+        // Open Change Password Modal
+        $("#changePasswordBtn").click(function () {
+           // Clear input fields when modal opens
+          $("#currentPassword").val("");
+          $("#newPassword").val("");
+          $("#confirmNewPassword").val("");
+          // Show the modal
+          $("#changePasswordModal").modal("show");
+        });
+
+        // Handle Change Password Form Submission
+        $("#changePasswordForm").submit(function (event) {
+          event.preventDefault();
+          const currentPassword = $("#currentPassword").val();
+          const newPassword = $("#newPassword").val();
+          const confirmNewPassword = $("#confirmNewPassword").val();
+
+          // Validate new password and confirm new password
+          if (newPassword !== confirmNewPassword) {
+            showToast("New password and confirm password do not match!", "bg-danger");
+            return;
+          }
+
+          // Send request to change password
+          $.ajax({
+            url: `http://localhost:3000/change-password/${userId}`,
+            method: "PUT",
+            contentType: "application/json",
+            data: JSON.stringify({
+              currentPassword,
+              newPassword,
+            }),
+            success: function (response) {
+              if (response.success) {
+                showToast("Password changed successfully!", "bg-success");
+                $("#changePasswordModal").modal("hide");
+              } else {
+                showToast(response.message || "Failed to change password!", "bg-danger");
+              }
+            },
+            error: function () {
+              showToast("Error changing password!", "bg-danger");
+            },
+          });
+        });
+      });
+
+      $(document).ready(function () {
+        const userId = getCookie("userId");
+
+        // Open Delete Account Modal
+        $("#deleteAccountBtn").click(function () {
+          $("#deleteAccountModal").modal("show");
+        });
+
+        // Handle Account Deletion
+        $("#confirmDeleteAccount").click(function () {
+          $.ajax({
+            url: `http://localhost:3000/delete-account/${userId}`,
+            method: "DELETE",
+            success: function (response) {
+              if (response.success) {
+                showToast("Account deleted successfully!", "bg-success");
+                $("#deleteAccountModal").modal("hide");
+
+                // Redirect to login or homepage after deletion
+                setTimeout(() => {
+                  window.location.href = "../index.html"; // Redirect to login page
+                }, 2000);
+              } else {
+                showToast(response.message || "Failed to delete account!", "bg-danger");
+              }
+            },
+            error: function () {
+              showToast("Error deleting account!", "bg-danger");
+            },
+          });
+        });
+      });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

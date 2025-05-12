@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Teamwork Management System</title>
+  <link rel="icon" type="image/png" style="object-fit: cover;" href="assets/logo.png">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <link rel="stylesheet" href="assets/css/home.css" />
+
+  <style>
+    .hero-section {
+      position: relative;
+      background: url("assets/home-background.png") no-repeat center center/cover;
+      height: 60vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      text-align: center;
+      padding-top: 300px;
+      padding-bottom: 200px;
+    }
+
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.4);
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .carousel-inner {
+      width: 70%;
+      margin: auto;
+    }
+
+    .carousel-item img {
+      width: 70%;
+      height: auto;
+      max-height: 400px;
+      object-fit: contain;
+    }
+
+    .carousel-caption {
+      background: rgba(0, 0, 0, 0.6);
+      padding: 10px;
+      border-radius: 5px;
+    }
+
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+      filter: invert(1);
+    }
+
+    /* Ensure the modal takes full height on larger screens */
+    @media (min-width: 768px) {
+      .modal-lg {
+        max-width: 610px;
+        /* Adjust the width as needed */
+      }
+    }
+
+    /* Add a border between the form and image */
+    .col-md-6:first-child {
+      border-right: 1px solid #dee2e6;
+    }
+  </style>
+
+
+  <style>
+    /* Custom animations */
+    .modal-content {
+      transition: transform 0.3s ease-out;
+    }
+
+    .form-control {
+      transition: all 0.3s ease;
+      border: 1px solid #dee2e6;
+    }
+
+    .form-control:focus {
+      border-color: #86b7fe;
+      box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+      border: none;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+    }
+
+    .btn-light {
+      transition: all 0.3s ease;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-light:hover {
+      background-color: #fff !important;
+      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.05);
+    }
+    /* Smooth transitions for inputs and buttons */
+.form-control {
+  transition: all 0.3s ease;
+  border: 1px solid #dee2e6;
+}
+
+.form-control:focus {
+  border-color: #86b7fe;
+  box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+  transform: translateY(-2px);
+}
+
+/* Resend OTP link hover effect */
+.text-primary {
+  transition: color 0.3s ease;
+}
+
+.text-primary:hover {
+  color: #0d6efd !important;
+}
+
+/* Disabled Resend OTP button */
+#resendOtpBtn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+.faq {
+    padding: 40px 0;
+    background-color: #f9f9f9;
+  }
+  .faq .container {
+    text-align: center;
+  }
+  .faq-box {
+    background: #fff;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+  }
+  .question {
+    font-size: 18px;
+    font-weight: bold;
+    color: #007bff;
+    transition: color 0.3s;
+  }
+  .question:hover {
+    color: #0056b3;
+  }
+  .answer {
+    display: none;
+    padding: 10px;
+    margin-top: 10px;
+    background-color: #f8f9fa;
+    border-left: 4px solid #007bff;
+    border-radius: 5px;
+  }
+
+  </style>
+</head>
+
+<body>
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4 fixed-top">
+    <img style="width: 40px; object-fit: cover;" src="assets/logo.png" />
+    <a class="navbar-brand" href="#">TeamWork</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item"><a class="nav-link" href="#home">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="#aboutus">About Us</a></li>
+        <li class="nav-item"><a class="nav-link" href="#purpose">Purpose</a></li>
+        <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
+        <li class="nav-item"><a class="nav-link" href="#contactus">Contact Us</a></li>
+        <li class="nav-item">
+          <a class="btn btn-light ms-3" data-bs-toggle="modal" data-bs-target="#loginModal" href="#">Sign In</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section id="home" class="hero-section">
+    <div class="overlay"></div>
+    <div class="hero-content container">
+      <h1 class="fw-bold">
+        Alone we can do so little,<br />
+        together we can do so much.
+      </h1>
+      <p class="lead">
+        We make progress; we build excellence. Through collaboration, shared
+        vision, achieving the impossible as one strong team.
+      </p>
+      <a class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#signupModal">Register →</a>
+    </div>
+  </section>
+
+  <!-- Exploring Prominence Section -->
+  <section id="aboutus" class="feature-section">
+    <div class="container">
+      <h2 class="text-center mb-4"><b>Exploring Prominence</b></h2>
+      <p style="text-align: center; font-size: 20px">
+        Browser through teams, manage tasks, and streamline workflows
+        hassle-free while boosting productivity and achieving project goals
+      </p>
+      <div class="row">
+        <div class="col-md-6">
+          <img src="assets/img/work.jpeg" class="img-fluid rounded" alt="Meeting"
+            style="height: 280px;width: 600px; border-radius: 30px;" />
+        </div>
+        <div class="col-md-6">
+          <p style="
+                font-size: 22px;
+                text-align: center;
+                text-align: justify;
+                padding: 30px;
+              ">
+            Our Teamwork Management System is designed to work seamlessly,
+            empowering your team with enhanced collaboration, efficient
+            communication, and streamlined task management to ensure faster
+            project delivery, improved productivity, and better resource
+            utilization.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WorkStream Capabilities -->
+  <section id="purpose" class="container mt-5 mb-5">
+    <h2 class="text-center" style="margin-bottom: 20px;"><b>Workstream Capabilities</b></h2>
+    <p class="text-center" style="font-size: 20px;">
+      Browse through teams, manage tasks, streamline workflows hassle-free while boosting productivity & achieving
+      project goals.
+    </p>
+
+    <!-- Bootstrap Carousel -->
+    <div id="workstreamCarousel" class="carousel slide" data-bs-ride="carousel">
+      <!-- Indicators -->
+      <div class="carousel-indicators">
+        <button type="button" data-bs-target="#workstreamCarousel" data-bs-slide-to="0" class="active"></button>
+        <button type="button" data-bs-target="#workstreamCarousel" data-bs-slide-to="1"></button>
+        <button type="button" data-bs-target="#workstreamCarousel" data-bs-slide-to="2"></button>
+        <button type="button" data-bs-target="#workstreamCarousel" data-bs-slide-to="3"></button>
+      </div>
+
+      <!-- Carousel Items -->
+      <div class="carousel-inner">
+        <div class="carousel-item active">
+          <img src="assets/Img/feature-1.png" class="d-block w-100" alt="Facilitate Collaboration">
+          <div class="carousel-caption d-none d-md-block">
+            <h5>Facilitate Collaboration</h5>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <img src="assets/Img/feature-2.png" class="d-block w-100" alt="Streamline Efficiency">
+          <div class="carousel-caption d-none d-md-block">
+            <h5>Streamline Efficiency</h5>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <img src="assets/Img/feature-3.png" class="d-block w-100" alt="Monitor Performance">
+          <div class="carousel-caption d-none d-md-block">
+            <h5>Monitor Performance</h5>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <img src="assets/Img/feature-4.webp" class="d-block w-100" alt="Maximize Productivity">
+          <div class="carousel-caption d-none d-md-block">
+            <h5>Maximize Productivity</h5>
+          </div>
+        </div>
+        <!-- <div class="carousel-item">
+                  <img src="feature-5.png" class="d-block w-100" alt="Effective Goal Setting">
+                  <div class="carousel-caption d-none d-md-block">
+                      <h5>Effective Goal Setting</h5>
+                  </div>
+              </div> -->
+      </div>
+
+      <!-- Controls (Next & Previous Buttons) -->
+      <button class="carousel-control-prev" type="button" data-bs-target="#workstreamCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#workstreamCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      </button>
+    </div>
+  </section>
+
+
+  <!-- Productivity Enhancements -->
+  <section id="services" class="feature-section">
+    <div class="container">
+      <h2 class="text-center mb-4"><b>Productivity Enhancements</b></h2>
+      <p class="text-center" style="text-align: center; font-size: 20px">
+        "Unlock your team's full potential with seamless productivity
+        enhancements that drive efficiency and results"
+      </p>
+      <div class="row text-center">
+        <div class="col-md-3">
+          <div class="feature-box">
+            <img src="assets/img/goal.png" alt="Goal" width="100px" />
+            <h5><b>Goal Setting</b></h5>
+            <p style="font-size: 18px">
+              Flexibility to embrace unexpected change.
+            </p>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="feature-box">
+            <img src="assets/img/Flexibility.jpg" alt="Flexibility" width="100px" />
+            <h5><b>Flexibility</b></h5>
+            <p style="font-size: 18px">
+              Adapt quickly flexibility to changes .
+            </p>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="feature-box">
+            <img src="assets/img/Communication.avif" alt="Communication" width="100px" />
+            <h5><b>Communication</b></h5>
+            <p style="font-size: 18px">
+              Seamless and effective communication.
+            </p>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="feature-box">
+            <img src="assets/img/Adaptability.png" alt="Goal" width="100px" />
+            <h5><b>Adaptability</b></h5>
+            <p style="font-size: 18px">
+              Improved responsiveness to new challenges.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+<section class="faq">
+  <div class="container">
+    <h2><b>Frequently Asked Questions</b></h2>
+    <h5>
+      Find answers to the most commonly asked questions about our services and platform.
+    </h5>
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="faq-box">
+          <div class="question" onclick="toggleAnswer(this)">How can I register as a guide?</div>
+          <div class="answer">To register as a guide, please contact our support team at 
+            <a href="mailto:teamwork17223@gmail.com" class="text-primary">teamwork17223@gmail.com</a> 
+            with your credentials and relevant experience. Our team will review 
+            your application and guide you through the registration process.
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="faq-box">
+          <div class="question" onclick="toggleAnswer(this)">How do I update my task progress?</div>
+          <div class="answer"><p>To update your progress:</p>
+            <ol class="mb-3">
+              <li><strong>Open your assigned task</strong> from the Dashboard</li>
+              <li><strong>Break it down</strong> into subtasks (if needed)</li>
+              <li><strong>Mark subtasks</strong> as complete as you finish them</li>
+              <li><strong>Save changes</strong> - your progress updates automatically</li>
+            </ol>
+            <div class="alert alert-dark mb-0">
+              <i class="fas fa-info-circle me-2"></i> The system calculates your overall progress based on completed subtasks.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="faq-box">
+          <div class="question" onclick="toggleAnswer(this)">Can students join multiple teams?</div>
+          <div class="answer"><p>Our system enforces a <strong>one-team policy</strong> for students:</p>
+      
+            <ul class="mb-3">
+              <li>Each student can only be active in <strong>one team at a time</strong></li>
+              <li>To switch teams, you must first <strong>leave your current team</strong></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="faq-box">
+          <div class="question" onclick="toggleAnswer(this)">Can I assign multiple tasks to a team?</div>
+          <div class="answer"><p>Yes, you can assign <strong>multiple tasks</strong> to any team. The system will:</p>
+            <ul>
+              <li>Automatically distribute tasks to members</li>
+              <li>Track each member's workload</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+  <!-- Footer -->
+<footer class="text-center text-lg-start bg-dark text-light">
+  <!-- Section: Social media -->
+  <!-- Section: Links  -->
+  <section class="">
+    <div class="container text-center text-md-start mt-5">
+      <div class="row mt-3">
+        <!-- Grid column -->
+        <div class="col-md-3 col-lg-4 col-xl-3 mx-auto mb-4 mt-4">
+          <div class="d-flex align-items-center mb-4">
+            <img src="assets/logo.png" alt="Team Work Logo" style="height: 40px;" class="d-inline-block align-middle">
+            <h6 class="text-uppercase fw-bold mb-0">
+              Team Work
+            </h6>
+          </div>
+          <p style="text-align: left;">
+            We make progress; we build excellence. Through collaboration, shared
+            vision, achieving the impossible as one strong team.
+          </p>
+        </div>
+        <!-- Grid column -->
+
+        <!-- Grid column -->
+        <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mb-4 mt-4 ">
+          <h6 class="text-uppercase fw-bold mb-4">Services</h6>
+          <p><a href="#" class="text-light">Goal Setting</a></p>
+          <p><a href="#" class="text-light">Flexibility</a></p>
+          <p><a href="#" class="text-light">Communication</a></p>
+          <p><a href="#" class="text-light">Adaptability</a></p>
+        </div>
+        <!-- Grid column -->
+
+        <!-- Grid column -->
+        <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mb-4 mt-4">
+          <h6 class="text-uppercase fw-bold mb-4">Useful Links</h6>
+          <p><a href="#" class="text-light">Pricing</a></p>
+          <p><a href="#" class="text-light">Settings</a></p>
+          <p><a href="#" class="text-light">Support</a></p>
+          <p><a href="#" class="text-light">Contact Us</a></p>
+        </div>
+        <!-- Grid column -->
+
+        <!-- Grid column -->
+        <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4 mt-4">
+          <h6 class="text-uppercase fw-bold mb-4">Contact</h6>
+          <p><i class="fas fa-envelope me-3"></i> teamwork17223@gmail.com</p>
+          <p><i class="fas fa-phone me-3"></i> +123 456 7890</p>
+        </div>
+        <!-- Grid column -->
+      </div>
+    </div>
+  </section>
+  <!-- Section: Links  -->
+
+  <!-- Copyright -->
+  <div class="text-center p-4" style="background-color: rgba(0, 0, 0, 0.05);">
+    © 2024 Team Work. All rights reserved.
+  </div>
+  <!-- Copyright -->
+</footer>
+<!-- Footer -->
+
+
+  <!-- Login Modal -->
+  <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 650px;"> <!-- Fixed width -->
+      <div class="modal-content overflow-hidden" style="border-radius: 20px;  padding:30px;">
+        <div class="modal-body p-0">
+          <div class="row g-0"> <!-- Removed extra padding -->
+            <!-- Left Column: Login Form -->
+            <div class="col-md-6 d-flex flex-column p-4"
+              style="background: linear-gradient(135deg, #ffffff 0%, #e9ecef 100%);">
+              <button type="button" class="btn-close position-absolute end-0 top-0 m-2" data-bs-dismiss="modal"
+                aria-label="Close"></button>
+              <div class="w-100 mb-3">
+                <h3 class="fw-bold mb-1">Welcome Back! 👋</h3>
+                <p class="text-muted mb-0">Please sign in to continue</p>
+              </div>
+
+              <form id="loginForm" class="d-flex flex-column gap-3">
+                <!-- Email Input -->
+                <div class="form-floating">
+                  <input type="email" class="form-control rounded-4" id="username" placeholder="name@example.com"
+                    autocomplete="email" style="height: 48px; font-size: 16px;">
+                  <label for="username">Email address</label>
+                </div>
+
+                <!-- Password Input -->
+                <div class="form-floating">
+                  <input type="password" class="form-control rounded-4" id="password" placeholder="Password"
+                    autocomplete="current-password" style="height: 48px; font-size: 16px;">
+                  <label for="password">Password</label>
+                </div>
+
+                <!-- Remember Me & Forgot Password -->
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="rememberMe">
+                    <label class="form-check-label text-muted small" for="rememberMe">
+                      Remember me
+                    </label>
+                  </div>
+                  <a href="#" class="text-decoration-none small text-primary" data-bs-toggle="modal"
+                    data-bs-target="#forgotPasswordModal" style="transition: color 0.2s ease;">
+                    Forgot Password?
+                  </a>
+                </div>
+
+                <!-- Login Button -->
+                <button type="submit" class="btn btn-primary btn-lg rounded-4 py-2 text-uppercase fw-bold"
+                  style="letter-spacing: 0.5px; transition: transform 0.2s ease;">
+                  Sign In
+                </button>
+
+                <!-- Registration Link -->
+                <div class="text-center small mt-2">
+                  Don't have an account?
+                  <a href="#" class="text-decoration-none fw-bold text-primary" data-bs-toggle="modal"
+                    data-bs-target="#signupModal" style="transition: color 0.2s ease;">
+                    Sign up
+                  </a>
+                </div>
+              </form>
+            </div>
+
+            <!-- Right Column: Image -->
+            <div class="col-md-6 d-none d-md-block position-relative">
+              <img src="assets/login.jpg" alt="Login Image" class="img-fluid h-100"
+                style="object-fit: cover; filter: brightness(0.9);">
+              <div class="position-absolute top-50 start-50 translate-middle text-white text-center w-100 px-3">
+                <h3 class="fw-bold mb-2" style="font-size: 20px;">Join Our Community</h3>
+                <p class="opacity-75" style="font-size: 14px;">Discover amazing features and connect with others</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Signup Modal -->
+<div class="modal fade" id="signupModal" tabindex="-1" aria-labelledby="signupModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 650px;"> <!-- Fixed width -->
+    <div class="modal-content overflow-hidden" style="border-radius: 20px; padding: 30px;">
+      <div class="modal-body p-0">
+        <div class="row g-0"> <!-- Removed extra padding -->
+          <!-- Left Column: Image -->
+          <div class="col-md-6 d-none d-md-block position-relative">
+            <img src="assets/register.png" alt="Signup Image" class="img-fluid h-100"
+              style="object-fit: cover; filter: brightness(0.9);">
+            <div class="position-absolute top-50 start-50 translate-middle text-white text-center w-100 px-3">
+              <h3 class="fw-bold mb-2" style="font-size: 20px;">Join Our Community</h3>
+              <p class="opacity-75" style="font-size: 14px;">Discover amazing features and connect with others</p>
+            </div>
+          </div>
+
+          <!-- Right Column: Signup Form -->
+          <div class="col-md-6 d-flex flex-column p-4"
+            style="background: linear-gradient(135deg, #ffffff 0%, #e9ecef 100%);">
+            <button type="button" class="btn-close position-absolute end-0 top-0 m-2" data-bs-dismiss="modal"
+              aria-label="Close"></button>
+            <div class="w-100 mb-3">
+              <h3 class="fw-bold mb-1">Create Your Account! 🚀</h3>
+              <p class="text-muted mb-0">Sign up to get started</p>
+            </div>
+
+            <form id="signupForm" class="d-flex flex-column gap-3">
+              <!-- Username Input -->
+              <div class="form-floating">
+                <input type="text" class="form-control rounded-4" id="signupUsername" placeholder="Username"
+                  autocomplete="username" style="height: 48px; font-size: 16px;" required />
+                <label for="signupUsername">Username</label>
+              </div>
+
+              <!-- Email Input -->
+              <div class="form-floating">
+                <input type="email" class="form-control rounded-4" id="signupEmail" placeholder="name@example.com"
+                  autocomplete="email" style="height: 48px; font-size: 16px;" required />
+                <label for="signupEmail">Email address</label>
+              </div>
+
+              <!-- Password Input -->
+              <div class="form-floating">
+                <input type="password" class="form-control rounded-4" id="signupPassword" placeholder="Password"
+                  autocomplete="new-password" style="height: 48px; font-size: 16px;" required />
+                <label for="signupPassword">Password</label>
+              </div>
+
+              <!-- Signup Button -->
+              <button type="submit" class="btn btn-primary btn-lg rounded-4 py-2 text-uppercase fw-bold"
+                style="letter-spacing: 0.5px; transition: transform 0.2s ease;">
+                Sign Up
+              </button>
+
+              <!-- Login Link -->
+              <div class="text-center small mt-2">
+                Already have an account?
+                <a href="#" class="text-decoration-none fw-bold text-primary" data-bs-toggle="modal"
+                  data-bs-target="#loginModal" style="transition: color 0.2s ease;">
+                  Sign In
+                </a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!--Signup OTP Verification Modal -->
+  <!-- OTP Verification Modal -->
+  <div class="modal fade" id="verifyOtpModal" tabindex="-1" aria-labelledby="verifyOtpModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="border-radius: 15px; overflow: hidden;">
+        <!-- Modal Header -->
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title fw-bold" id="verifyOtpModalLabel">Verify OTP</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="modal-body p-4">
+          <form id="verifyOtpForm">
+            <!-- Email Input -->
+            <div class="mb-4">
+              <label for="otpEmail" class="form-label fw-bold">Email</label>
+              <input type="email" class="form-control rounded-3" id="otpEmail" readonly
+                style="background-color: #f8f9fa; cursor: not-allowed;" />
+            </div>
+
+            <!-- OTP Input -->
+            <div class="mb-4">
+              <label for="otpCode" class="form-label fw-bold">Enter OTP</label>
+              <div class="input-group">
+                <input type="text" class="form-control rounded-3" id="otpCode" placeholder="Enter 6-digit OTP" required
+                  style="font-size: 16px;" />
+                <button type="button" class="btn btn-outline-secondary" id="resendOtpBtn" disabled>
+                  Resend OTP (<span id="otpTimer">60</span>s)
+                </button>
+              </div>
+              <small class="text-muted">Check your email for the OTP.</small>
+            </div>
+
+            <!-- Verify Button -->
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary btn-lg rounded-3 fw-bold py-2">
+                Verify OTP
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="modal-footer bg-light">
+          <p class="text-muted small mb-0">
+            Didn't receive the OTP? <a href="#" class="text-primary fw-bold" id="resendOtpLink" style="color: #1e3a5f;">Resend OTP</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Forgot Password Modal -->
+  <!-- Forgot Password Modal -->
+<div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-labelledby="forgotPasswordModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="forgotPasswordModalLabel">Forgot Password</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="forgotPasswordForm">
+          <div class="mb-3">
+            <label for="email" class="form-label">Email Address</label>
+            <input type="email" class="form-control" id="email" required autocomplete="email" placeholder="Enter your email" />
+            <div class="form-text">We'll send a verification code to your email.</div>
+          </div>
+          <button type="submit" class="btn btn-primary w-100 mt-3">
+            <i class="bi bi-send me-2"></i>Submit
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Reset Password Modal -->
+<div class="modal fade" id="resetPasswordModal" tabindex="-1" aria-labelledby="resetPasswordModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title" id="resetPasswordModalLabel">Reset Password</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="resetPasswordForm">
+          <div class="mb-3">
+            <label for="restUsername" class="form-label">Username</label>
+            <input type="text" class="form-control" id="restUsername" readonly placeholder="Your username" />
+          </div>
+          <div class="mb-3">
+            <label for="resetEmail" class="form-label">Email</label>
+            <input type="email" class="form-control" id="resetEmail" readonly autocomplete="username" placeholder="Your email" />
+          </div>
+          <div class="mb-3">
+            <label for="otp" class="form-label">OTP</label>
+            <input type="text" class="form-control" id="otp" required placeholder="Enter OTP" />
+            <div class="form-text">Check your email for the OTP.</div>
+          </div>
+          <div class="mb-3">
+            <label for="newPassword" class="form-label">New Password</label>
+            <input type="password" class="form-control" id="newPassword" required autocomplete="new-password" placeholder="Enter new password" />
+          </div>
+          <div class="mb-3">
+            <label for="confirmPassword" class="form-label">Confirm Password</label>
+            <input type="password" class="form-control" id="confirmPassword" required autocomplete="new-password" placeholder="Confirm new password" />
+          </div>
+          <button type="submit" class="btn btn-success w-100 mt-3">
+            <i class="bi bi-check-circle me-2"></i>Update Password
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Toast Container -->
+  <div class="toast-container position-fixed top-0 end-0 p-3">
+    <div id="toastMessage" class="toast align-items-center text-white bg-danger border-0" role="alert"
+      aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body"></div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+          aria-label="Close"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/js/bootstrap.bundle.min.js"></script> -->
+
+  <script src="./assets/js/signout.js"></script>
+
+  <script>
+    function toggleAnswer(element) {
+    let answer = element.nextElementSibling;
+    let allAnswers = document.querySelectorAll('.answer');
+    
+    allAnswers.forEach(ans => {
+      if (ans !== answer) ans.style.display = "none";
+    });
+    
+    answer.style.display = (answer.style.display === "block") ? "none" : "block";
+  }
+
+    $(document).ready(function () {
+      let timer; // Variable to hold the timer interval
+      let timeLeft = 60; // Initial time for the countdown
+
+      // Function to start or restart the countdown timer
+      function startTimer() {
+        clearInterval(timer); // Clear any existing timer to avoid overlaps
+        timeLeft = 60; // Reset the timer to 60 seconds
+        $("#otpTimer").text(timeLeft); // Update the timer display
+
+        // Start the countdown
+        timer = setInterval(() => {
+          timeLeft--; // Decrement the time left
+          $("#otpTimer").text(timeLeft); // Update the timer display
+
+          // When the timer reaches 0
+          if (timeLeft <= 0) {
+            clearInterval(timer); // Stop the timer
+            $("#resendOtpBtn").prop("disabled", false).text("Resend OTP"); // Enable the Resend OTP button
+            $("#resendOtpLink").removeClass("text-muted").addClass("text-primary"); // Enable the Resend OTP link
+            $("#otpCode").prop("disabled", true); // Disable the OTP input field
+          }
+        }, 1000); // Update every second
+      }
+
+      // Resend OTP functionality
+      $("#resendOtpBtn, #resendOtpLink").on("click", function (e) {
+        e.preventDefault(); // Prevent default form submission or link behavior
+        const email = $("#otpEmail").val(); // Get the email from the input field
+
+        // Send an AJAX request to resend the OTP
+        $.ajax({
+          url: "http://localhost:3000/resend-otp",
+          method: "POST",
+          contentType: "application/json",
+          data: JSON.stringify({ email: email }),
+          success: function (response) {
+            if (response.success) {
+              showToast("OTP re-sent successfully!", "bg-success"); // Show success toast
+
+              // Restart the countdown timer
+              startTimer();
+
+              // Disable the Resend OTP button and update its text
+              $("#resendOtpBtn").prop("disabled", true).html(`Resend OTP (<span id="otpTimer">60</span>s)`);
+              $("#resendOtpLink").addClass("text-muted").removeClass("text-primary");
+
+              // Enable the OTP input field
+              $("#otpCode").prop("disabled", false);
+            } else {
+              showToast(response.message || "Failed to resend OTP.", "bg-danger"); // Show error toast
+            }
+          },
+          error: function () {
+            showToast("Error resending OTP. Try again.", "bg-danger"); // Show error toast
+          },
+        });
+      });
+
+      // Start the timer when the OTP modal is shown
+      $("#verifyOtpModal").on("shown.bs.modal", function () {
+        startTimer();
+      });
+
+      // Reset the timer when the OTP modal is hidden
+      $("#verifyOtpModal").on("hidden.bs.modal", function () {
+        clearInterval(timer); // Stop the timer
+        $("#resendOtpBtn").prop("disabled", true).html(`Resend OTP (<span id="otpTimer">60</span>s)`); // Reset the Resend OTP button
+        $("#resendOtpLink").addClass("text-muted").removeClass("text-primary"); // Reset the Resend OTP link
+        $("#otpCode").prop("disabled", false); // Enable the OTP input field
+      });
+      const userRole = getCookie("userRole");
+
+      function showToast(message, bgColor = "bg-danger") {
+        $("#toastMessage")
+          .removeClass("bg-danger bg-success")
+          .addClass(bgColor);
+        $("#toastMessage .toast-body").text(message);
+        let toast = new bootstrap.Toast(
+          document.getElementById("toastMessage")
+        );
+        toast.show();
+      }
+
+      $("#loginForm").submit(function (event) {
+        event.preventDefault();
+        let username = $("#username").val();
+        let password = $("#password").val();
+
+        $.ajax({
+          type: "POST",
+          url: "http://localhost:3000/login",
+          contentType: "application/json",
+          dataType: "json",
+          data: JSON.stringify({ email: username, password: password }),
+          success: function (response) {
+            console.log("Server Response:", response); // Debugging
+            if (response.success) {
+              // Set cookie for user role (cookie expires in 1 day)
+              const date = new Date();
+              date.setTime(date.getTime() + 1 * 24 * 60 * 60 * 1000);
+              document.cookie =
+                "userRole=" +
+                response.role +
+                "; expires=" +
+                date.toUTCString() +
+                "; path=/";
+
+              document.cookie =
+                "userId=" +
+                response.user._id +
+                "; expires=" +
+                date.toUTCString() +
+                "; path=/";
+
+              showToast("Login successful!", "bg-success");
+
+              setTimeout(() => {
+                window.location.href =
+                  response.role === "guide"
+                    ? "guide/dashboard.html"
+                    : "student/dashboard.html";
+              }, 2000);
+            } else {
+              showToast("Invalid credentials");
+            }
+          },
+          error: function (xhr, status, error) {
+            console.log("AJAX Error:", xhr.responseText); // Debugging
+            showToast("Server error. Try again later.");
+          },
+        });
+      });
+
+      // Helper function to set a cookie
+      function setCookie(name, value, days) {
+        let expires = "";
+        if (days) {
+          const date = new Date();
+          date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+          expires = "; expires=" + date.toUTCString();
+        }
+        document.cookie = name + "=" + (value || "") + expires + "; path=/";
+      }
+
+      $("#signupForm").submit(function (event) {
+        event.preventDefault();
+        let username = $("#signupUsername").val();
+        let email = $("#signupEmail").val();
+        let password = $("#signupPassword").val();
+
+        $.ajax({
+          type: "POST",
+          url: "http://localhost:3000/send-otp",
+          contentType: "application/json",
+          dataType: "json",
+          data: JSON.stringify({ name: username, email: email, password: password }),
+          success: function (response) {
+            if (response.success) {
+              showToast("OTP sent to your email address", "bg-success");
+              $("#signupModal").modal("hide");  // Hide Signup Modal
+              $("#otpEmail").val(email);  // Set email in OTP modal
+              $("#verifyOtpModal").modal("show");  // Show OTP Modal
+            } else {
+              showToast(response.message, "bg-danger");
+            }
+          },
+          error: function () {
+            showToast("Error sending OTP. Try again.", "bg-danger");
+          },
+        });
+      });
+
+      $("#verifyOtpForm").submit(function (event) {
+        event.preventDefault();
+        let email = $("#otpEmail").val();
+        let otpCode = $("#otpCode").val();
+
+        $.ajax({
+          type: "POST",
+          url: "http://localhost:3000/verify-otp",
+          contentType: "application/json",
+          dataType: "json",
+          data: JSON.stringify({ email: email, otp: otpCode }),
+          success: function (response) {
+            if (response.success) {
+              showToast("Signup successful!", "bg-success");
+              $("#verifyOtpModal").modal("hide");
+            } else {
+              showToast(response.message, "bg-danger");
+            }
+          },
+          error: function () {
+            showToast("Error verifying OTP. Try again.", "bg-danger");
+          },
+        });
+      });
+
+      // Step 2: Handle Forgot Password Form Submit
+      $('#forgotPasswordForm').on('submit', function (e) {
+        e.preventDefault();
+        let email = $('#email').val();
+
+        $.ajax({
+          url: 'http://localhost:3000/forgot-password', // Your API endpoint
+          method: 'POST',
+          contentType: "application/json",
+          dataType: "json",
+          data: JSON.stringify({ email: email }),
+          success: function (response) {
+            // Assuming API returns: { username: 'john_doe', email: 'john@example.com' }
+            if (response.status) {
+
+              showToast('OTP Sent to your email address', 'bg-success');
+
+              $('#restUsername').val(response.username);
+              $('#resetEmail').val(response.email);
+
+              // Hide forgot password modal
+              $('#forgotPasswordModal').modal('hide');
+
+              // Show reset password modal
+              $('#resetPasswordModal').modal('show');
+            } else {
+              showToast(response.message || 'Invalid email address.');
+            }
+          },
+          error: function (xhr) {
+            showToast('Failed to process request. Try again later.');
+          }
+        });
+      });
+
+      // Step 5: Handle Reset Password Form Submit
+      $('#resetPasswordForm').on('submit', function (e) {
+        e.preventDefault();
+        let otp = $('#otp').val();
+        let newPassword = $('#newPassword').val();
+        let confirmPassword = $('#confirmPassword').val();
+
+        if (newPassword !== confirmPassword) {
+          showToast('Passwords do not match');
+          return;
+        }
+
+        $.ajax({
+          url: 'http://localhost:3000/reset-password', // Your API endpoint
+          method: 'POST',
+          contentType: "application/json",
+          dataType: "json",
+          data: JSON.stringify({
+            email: $('#resetEmail').val(),
+            otp,
+            new_password: newPassword
+          }),
+          success: function (response) {
+            if (response.status) {
+              showToast('Password updated successfully!', 'bg-success');
+              $('#resetPasswordModal').modal('hide');
+            } else {
+              showToast(response.message || 'Invalid OTP or failed to update password.');
+            }
+          },
+          error: function (xhr) {
+            showToast('Failed to update password. Try again later.');
+          }
+        });
+      });
+    });
+  </script>
+</body>
+
+</html>
