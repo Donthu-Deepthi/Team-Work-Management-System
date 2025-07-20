@@ -516,7 +516,7 @@
   function fetchSenderName(userId) {
     return new Promise((resolve, reject) => {
       $.ajax({
-        url: `http://localhost:3000/user/${userId}`,
+        url: `https://team-work-backend-yj86.onrender.com/user/${userId}`,
         method: "GET",
         success: function (response) {
           resolve(response.name); // Resolve with the user's name
@@ -530,7 +530,7 @@
 
   // Fetch the team ID for the user
   $.ajax({
-    url: `http://localhost:3000/getTeamByUser/${userId}`,
+    url: `https://team-work-backend-yj86.onrender.com/getTeamByUser/${userId}`,
     method: "GET",
     success: function (teams) {
       if (teams.length > 0) {
@@ -540,7 +540,7 @@
         // Function to load chat messages
         function loadChatMessages() {
           $.ajax({
-            url: `http://localhost:3000/chat/${teamId}`,
+            url: `https://team-work-backend-yj86.onrender.com/chat/${teamId}`,
             method: "GET",
             success: function (messages) {
               const chatContainer = $("#chat-container");
@@ -584,7 +584,7 @@
 
               // Send the request
               $.ajax({
-                url: "http://localhost:3000/chat",
+                url: "https://team-work-backend-yj86.onrender.com/chat",
                 method: "POST",
                 contentType: "application/json",
                 data: JSON.stringify({
@@ -653,7 +653,7 @@
         // Fetch user profile data and populate the modal
         function fetchProfileData() {
           $.ajax({
-            url: `http://localhost:3000/profile/${userId}`,
+            url: `https://team-work-backend-yj86.onrender.com/profile/${userId}`,
             method: "GET",
             success: function (response) {
               if (response.success) {
@@ -684,7 +684,7 @@
           // const password = $("#editPassword").val();
 
           $.ajax({
-            url: `http://localhost:3000/update-profile/${userId}`,
+            url: `https://team-work-backend-yj86.onrender.com/update-profile/${userId}`,
             method: "PUT",
             contentType: "application/json",
             data: JSON.stringify({ name, email }),
@@ -732,7 +732,7 @@
 
           // Send request to change password
           $.ajax({
-            url: `http://localhost:3000/change-password/${userId}`,
+            url: `https://team-work-backend-yj86.onrender.com/change-password/${userId}`,
             method: "PUT",
             contentType: "application/json",
             data: JSON.stringify({
@@ -765,7 +765,7 @@
         // Handle Account Deletion
         $("#confirmDeleteAccount").click(function () {
           $.ajax({
-            url: `http://localhost:3000/delete-account/${userId}`,
+            url: `https://team-work-backend-yj86.onrender.com/delete-account/${userId}`,
             method: "DELETE",
             success: function (response) {
               if (response.success) {

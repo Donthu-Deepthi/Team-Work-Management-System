@@ -525,7 +525,7 @@
       fetchTasks();
 
       function fetchTeams() {
-        $.get("http://localhost:3000/teams", function (teams) {
+        $.get("https://team-work-backend-yj86.onrender.com/teams", function (teams) {
           let teamDropdown = $("#taskTeam");
           teamDropdown.empty();
           teams.forEach((team) => {
@@ -551,7 +551,7 @@
 
         // Fetch task details dynamically from the backend
         $.ajax({
-          url: `http://localhost:3000/get-task/${taskID}`, // API endpoint to get single task
+          url: `https://team-work-backend-yj86.onrender.com/get-task/${taskID}`, // API endpoint to get single task
           type: "GET",
           success: function (task) {
             // Fill the form with fetched data
@@ -586,7 +586,7 @@
         }
 
         $.ajax({
-          url: `http://localhost:3000/update-task/${taskID}`,
+          url: `https://team-work-backend-yj86.onrender.com/update-task/${taskID}`,
           type: "PUT",
           data: formData,
           processData: false,
@@ -618,7 +618,7 @@
         }
 
         $.ajax({
-          url: "http://localhost:3000/add-task",
+          url: "https://team-work-backend-yj86.onrender.com/add-task",
           type: "POST",
           data: formData,
           processData: false,
@@ -640,7 +640,7 @@
       // Fetch Tasks Function
       function fetchTasks() {
         $.ajax({
-          url: "http://localhost:3000/get-tasks",
+          url: "https://team-work-backend-yj86.onrender.com/get-tasks",
           type: "GET",
           success: function (tasks) {
             // Check if tasks is an array and has no items
@@ -654,7 +654,7 @@
 
             // If tasks are present, fetch teams to map team IDs to team names
             $.ajax({
-              url: "http://localhost:3000/teams", // Endpoint to fetch teams
+              url: "https://team-work-backend-yj86.onrender.com/teams", // Endpoint to fetch teams
               type: "GET",
               success: function (teams) {
                 let teamMap = {};
@@ -666,7 +666,7 @@
                 $("#taskTableBody").empty();
                 tasks.forEach((task) => {
                   let assetLink = task.assets
-                    ? `<a href="http://localhost:3000/uploads/${task.assets}" target="_blank">View File</a>`
+                    ? `<a href="https://team-work-backend-yj86.onrender.com/uploads/${task.assets}" target="_blank">View File</a>`
                     : "No File";
                   let teamName = teamMap[task.assignedTo] || "Unknown Team"; // Get team name from map
                   let row = `<tr>
@@ -708,7 +708,7 @@
       $("#confirmDeleteBtn").on("click", function () {
         if (taskToDelete) {
           $.ajax({
-            url: `http://localhost:3000/delete-task/${taskToDelete}`,
+            url: `https://team-work-backend-yj86.onrender.com/delete-task/${taskToDelete}`,
             type: "DELETE",
             success: function (response) {
               showToast("Task Deleted Successfully", "bg-success");
@@ -734,7 +734,7 @@
         // Fetch user profile data and populate the modal
         function fetchProfileData() {
           $.ajax({
-            url: `http://localhost:3000/profile/${userId}`,
+            url: `https://team-work-backend-yj86.onrender.com/profile/${userId}`,
             method: "GET",
             success: function (response) {
               if (response.success) {
@@ -765,7 +765,7 @@
           // const password = $("#editPassword").val();
 
           $.ajax({
-            url: `http://localhost:3000/update-profile/${userId}`,
+            url: `https://team-work-backend-yj86.onrender.com/update-profile/${userId}`,
             method: "PUT",
             contentType: "application/json",
             data: JSON.stringify({ name, email }),
@@ -813,7 +813,7 @@
 
           // Send request to change password
           $.ajax({
-            url: `http://localhost:3000/change-password/${userId}`,
+            url: `https://team-work-backend-yj86.onrender.com/change-password/${userId}`,
             method: "PUT",
             contentType: "application/json",
             data: JSON.stringify({
@@ -846,7 +846,7 @@
         // Handle Account Deletion
         $("#confirmDeleteAccount").click(function () {
           $.ajax({
-            url: `http://localhost:3000/delete-account/${userId}`,
+            url: `https://team-work-backend-yj86.onrender.com/delete-account/${userId}`,
             method: "DELETE",
             success: function (response) {
               if (response.success) {

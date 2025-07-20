@@ -480,7 +480,7 @@
         // Function to fetch team and user-specific data
         function loadData() {
           $.ajax({
-            url: `http://localhost:3000/dashboard/team/details/${userId}`,
+            url: `https://team-work-backend-yj86.onrender.com/dashboard/team/details/${userId}`,
             method: "GET",
             dataType: "json",
             success: function (data) {
@@ -549,7 +549,7 @@
         // Function to fetch all tasks for the team
         function fetchTeamTasks(teamId) {
           $.ajax({
-            url: `http://localhost:3000/team/tasks/${teamId}`,
+            url: `https://team-work-backend-yj86.onrender.com/team/tasks/${teamId}`,
             method: "GET",
             dataType: "json",
             success: function (response) {
@@ -606,7 +606,7 @@ $(document).ready(function () {
               const fileName = task.assets.split("-").pop(); // Extract filename after "-"
               const assetHTML = `
                 <div class="col-md-4">
-                  <a href="http://localhost:3000/uploads/${task.assets}" target="_blank">${fileName}</a>
+                  <a href="https://team-work-backend-yj86.onrender.com/uploads/${task.assets}" target="_blank">${fileName}</a>
                 </div>
               `;
               assetsContainer.append(assetHTML);
@@ -646,7 +646,7 @@ $(document).ready(function () {
           const taskText = $("#subtask-input").val().trim();
           if (taskText && teamId) {
             $.ajax({
-              url: "http://localhost:3000/addSubtask",
+              url: "https://team-work-backend-yj86.onrender.com/addSubtask",
               type: "POST",
               contentType: "application/json",
               data: JSON.stringify({ teamId, userId, title: taskText }),
@@ -668,7 +668,7 @@ $(document).ready(function () {
   const completed = $(this).prop("checked");
 
   $.ajax({
-    url: `http://localhost:3000/updateSubtask/${subtaskId}`,
+    url: `https://team-work-backend-yj86.onrender.com/updateSubtask/${subtaskId}`,
     type: "PUT",
     contentType: "application/json",
     data: JSON.stringify({ status: completed ? "completed" : "pending" }),
@@ -689,7 +689,7 @@ $(document).ready(function () {
           console.log("Subtask ID:", subtaskId); // Debugging
 
           $.ajax({
-            url: `http://localhost:3000/deleteSubtask/${subtaskId}`,
+            url: `https://team-work-backend-yj86.onrender.com/deleteSubtask/${subtaskId}`,
             type: "DELETE",
             success: function (response) {
               console.log("Subtask deleted successfully:", response); // Debugging
@@ -715,7 +715,7 @@ $(document).ready(function () {
         // Fetch user profile data and populate the modal
         function fetchProfileData() {
           $.ajax({
-            url: `http://localhost:3000/profile/${userId}`,
+            url: `https://team-work-backend-yj86.onrender.com/profile/${userId}`,
             method: "GET",
             success: function (response) {
               if (response.success) {
@@ -746,7 +746,7 @@ $(document).ready(function () {
           // const password = $("#editPassword").val();
 
           $.ajax({
-            url: `http://localhost:3000/update-profile/${userId}`,
+            url: `https://team-work-backend-yj86.onrender.com/update-profile/${userId}`,
             method: "PUT",
             contentType: "application/json",
             data: JSON.stringify({ name, email }),
@@ -794,7 +794,7 @@ $(document).ready(function () {
 
           // Send request to change password
           $.ajax({
-            url: `http://localhost:3000/change-password/${userId}`,
+            url: `https://team-work-backend-yj86.onrender.com/change-password/${userId}`,
             method: "PUT",
             contentType: "application/json",
             data: JSON.stringify({
@@ -827,7 +827,7 @@ $(document).ready(function () {
         // Handle Account Deletion
         $("#confirmDeleteAccount").click(function () {
           $.ajax({
-            url: `http://localhost:3000/delete-account/${userId}`,
+            url: `https://team-work-backend-yj86.onrender.com/delete-account/${userId}`,
             method: "DELETE",
             success: function (response) {
               if (response.success) {

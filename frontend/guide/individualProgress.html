@@ -454,7 +454,7 @@
       // Fetch team progress data
       async function fetchTeamProgress() {
         try {
-          const response = await fetch("http://localhost:3000/teams-progress");
+          const response = await fetch("https://team-work-backend-yj86.onrender.com/teams-progress");
           const data = await response.json();
 
           if (data.success) {
@@ -553,7 +553,7 @@
         // Fetch user profile data and populate the modal
         function fetchProfileData() {
           $.ajax({
-            url: `http://localhost:3000/profile/${userId}`,
+            url: `https://team-work-backend-yj86.onrender.com/profile/${userId}`,
             method: "GET",
             success: function (response) {
               if (response.success) {
@@ -584,7 +584,7 @@
           // const password = $("#editPassword").val();
 
           $.ajax({
-            url: `http://localhost:3000/update-profile/${userId}`,
+            url: `https://team-work-backend-yj86.onrender.com/update-profile/${userId}`,
             method: "PUT",
             contentType: "application/json",
             data: JSON.stringify({ name, email }),
@@ -632,7 +632,7 @@
 
           // Send request to change password
           $.ajax({
-            url: `http://localhost:3000/change-password/${userId}`,
+            url: `https://team-work-backend-yj86.onrender.com/change-password/${userId}`,
             method: "PUT",
             contentType: "application/json",
             data: JSON.stringify({
@@ -665,7 +665,7 @@
         // Handle Account Deletion
         $("#confirmDeleteAccount").click(function () {
           $.ajax({
-            url: `http://localhost:3000/delete-account/${userId}`,
+            url: `https://team-work-backend-yj86.onrender.com/delete-account/${userId}`,
             method: "DELETE",
             success: function (response) {
               if (response.success) {

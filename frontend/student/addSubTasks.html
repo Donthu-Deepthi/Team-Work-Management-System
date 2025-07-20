@@ -449,7 +449,7 @@
         // Function to load subtasks for the given teamId
         function loadSubtasks() {
           $.ajax({
-            url: `http://localhost:3000/tasks/${taskId}/${teamId}/subtasks/${userId}`, // Replace with your API endpoint
+            url: `https://team-work-backend-yj86.onrender.com/tasks/${taskId}/${teamId}/subtasks/${userId}`, // Replace with your API endpoint
             method: "GET",
             dataType: "json",
             success: function (data) {
@@ -499,7 +499,7 @@
               const fileName = task.assets.split("-").pop(); // Extract filename after "-"
               const assetHTML = `
                 <div class="col-md-4">
-                  <a href="http://localhost:3000/uploads/${task.assets}" target="_blank">${fileName}</a>
+                  <a href="https://team-work-backend-yj86.onrender.com/uploads/${task.assets}" target="_blank">${fileName}</a>
                 </div>
               `;
               assetsContainer.append(assetHTML);
@@ -532,7 +532,7 @@
           const taskText = $("#subtask-input").val().trim();
           if (taskText && teamId) {
             $.ajax({
-              url: "http://localhost:3000/addSubtask",
+              url: "https://team-work-backend-yj86.onrender.com/addSubtask",
               type: "POST",
               contentType: "application/json",
               data: JSON.stringify({ teamId, userId, title: taskText, taskId }),
@@ -553,7 +553,7 @@
           const completed = $(this).prop("checked");
 
           $.ajax({
-            url: `http://localhost:3000/updateSubtask/${subtaskId}`, // Replace with your API endpoint
+            url: `https://team-work-backend-yj86.onrender.com/updateSubtask/${subtaskId}`, // Replace with your API endpoint
             type: "PUT",
             contentType: "application/json",
             data: JSON.stringify({
@@ -573,7 +573,7 @@
           const subtaskId = $(this).data("id");
 
           $.ajax({
-            url: `http://localhost:3000/deleteSubtask/${subtaskId}`, // Replace with your API endpoint
+            url: `https://team-work-backend-yj86.onrender.com/deleteSubtask/${subtaskId}`, // Replace with your API endpoint
             type: "DELETE",
             success: function (response) {
               loadSubtasks(); // Reload subtasks after deleting

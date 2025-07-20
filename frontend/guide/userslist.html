@@ -606,7 +606,7 @@
 
         // Fetch Users for Users List
         function fetchUsers() {
-          $.get("http://localhost:3000/students", function (users) {
+          $.get("https://team-work-backend-yj86.onrender.com/students", function (users) {
             let usersContainer = $("#users-container").empty();
             users.forEach((user) => {
               usersContainer.append(`
@@ -622,7 +622,7 @@
 
         // Fetch Users for Assigning to Teams (only users not in any team)
         function fetchUsersForDropdown() {
-          $.get("http://localhost:3000/users/not-in-teams", function (users) {
+          $.get("https://team-work-backend-yj86.onrender.com/users/not-in-teams", function (users) {
             console.log("Users fetched for dropdown:", users); // Debugging log
             let dropdown = $("#assignUsers").empty();
             dropdown.append(
@@ -639,7 +639,7 @@
         }
 
         function loadUsers() {
-          $.get("http://localhost:3000/students", function (users) {
+          $.get("https://team-work-backend-yj86.onrender.com/students", function (users) {
             let userOptions = users
               .map(
                 (user) => `<option value="${user._id}">${user.name}</option>`
@@ -653,7 +653,7 @@
 
         // Fetch Teams
         function fetchTeams() {
-          $.get("http://localhost:3000/teams", function (teams) {
+          $.get("https://team-work-backend-yj86.onrender.com/teams", function (teams) {
             let teamsTable = $("#teams-table").empty();
             teams.forEach((team) => {
               let assignedEmails = team.assignedTo
@@ -700,7 +700,7 @@
           console.log("Sending Data:", newTeam); // Debugging log
 
           $.ajax({
-            url: "http://localhost:3000/add-team",
+            url: "https://team-work-backend-yj86.onrender.com/add-team",
             type: "POST",
             contentType: "application/json", // Ensure JSON format
             data: JSON.stringify(newTeam), // Convert to JSON string
@@ -719,7 +719,7 @@
         // View Team
         $(document).on("click", ".view-btn", function () {
           let teamID = $(this).data("id");
-          $.get(`http://localhost:3000/teams/${teamID}`, function (team) {
+          $.get(`https://team-work-backend-yj86.onrender.com/teams/${teamID}`, function (team) {
             $("#viewTeamID").text(team.teamID);
             $("#viewTeamName").text(team.teamName);
             $("#viewAssignedTo").text(
@@ -738,7 +738,7 @@
         $(document).on("click", ".edit-btn", function () {
           let teamId = $(this).data("id");
 
-          $.get(`http://localhost:3000/teams/${teamId}`, function (team) {
+          $.get(`https://team-work-backend-yj86.onrender.com/teams/${teamId}`, function (team) {
             // Populate form fields with team data
             $("#editTeamId").val(team._id);
             $("#editTeamName").val(team.teamName);
@@ -787,7 +787,7 @@
 
           // Send the data to the backend
           $.ajax({
-            url: `http://localhost:3000/teams/${teamId}`,
+            url: `https://team-work-backend-yj86.onrender.com/teams/${teamId}`,
             type: "PUT",
             contentType: "application/json",
             data: JSON.stringify(updatedTeam),
@@ -830,7 +830,7 @@
 
           // Send the data to the backend
           $.ajax({
-            url: `http://localhost:3000/teams/${teamId}`,
+            url: `https://team-work-backend-yj86.onrender.com/teams/${teamId}`,
             type: "PUT",
             contentType: "application/json",
             data: JSON.stringify(updatedTeam),
@@ -853,7 +853,7 @@
           let updatedProgress = $("#editProgress").val();
 
           $.ajax({
-            url: `http://localhost:3000/teams/${teamID}`,
+            url: `https://team-work-backend-yj86.onrender.com/teams/${teamID}`,
             type: "PUT",
             contentType: "application/json",
             data: JSON.stringify({
@@ -878,7 +878,7 @@
         $("#confirmDelete").click(function () {
           let teamID = $("#deleteTeamID").val();
           $.ajax({
-            url: `http://localhost:3000/delete-team/${teamID}`,
+            url: `https://team-work-backend-yj86.onrender.com/delete-team/${teamID}`,
             type: "DELETE",
             success: function () {
               $("#deleteModal").modal("hide");
@@ -917,7 +917,7 @@
         // Fetch user profile data and populate the modal
         function fetchProfileData() {
           $.ajax({
-            url: `http://localhost:3000/profile/${userId}`,
+            url: `https://team-work-backend-yj86.onrender.com/profile/${userId}`,
             method: "GET",
             success: function (response) {
               if (response.success) {
@@ -948,7 +948,7 @@
           // const password = $("#editPassword").val();
 
           $.ajax({
-            url: `http://localhost:3000/update-profile/${userId}`,
+            url: `https://team-work-backend-yj86.onrender.com/update-profile/${userId}`,
             method: "PUT",
             contentType: "application/json",
             data: JSON.stringify({ name, email }),
@@ -996,7 +996,7 @@
 
           // Send request to change password
           $.ajax({
-            url: `http://localhost:3000/change-password/${userId}`,
+            url: `https://team-work-backend-yj86.onrender.com/change-password/${userId}`,
             method: "PUT",
             contentType: "application/json",
             data: JSON.stringify({
@@ -1029,7 +1029,7 @@
         // Handle Account Deletion
         $("#confirmDeleteAccount").click(function () {
           $.ajax({
-            url: `http://localhost:3000/delete-account/${userId}`,
+            url: `https://team-work-backend-yj86.onrender.com/delete-account/${userId}`,
             method: "DELETE",
             success: function (response) {
               if (response.success) {

@@ -822,7 +822,7 @@
 
         // Send an AJAX request to resend the OTP
         $.ajax({
-          url: "http://localhost:3000/resend-otp",
+          url: "https://team-work-backend-yj86.onrender.com/resend-otp",
           method: "POST",
           contentType: "application/json",
           data: JSON.stringify({ email: email }),
@@ -881,7 +881,7 @@
 
         $.ajax({
           type: "POST",
-          url: "http://localhost:3000/login",
+          url: "https://team-work-backend-yj86.onrender.com/login",
           contentType: "application/json",
           dataType: "json",
           data: JSON.stringify({ email: username, password: password }),
@@ -943,7 +943,7 @@
 
         $.ajax({
           type: "POST",
-          url: "http://localhost:3000/send-otp",
+          url: "https://team-work-backend-yj86.onrender.com/send-otp",
           contentType: "application/json",
           dataType: "json",
           data: JSON.stringify({ name: username, email: email, password: password }),
@@ -970,7 +970,7 @@
 
         $.ajax({
           type: "POST",
-          url: "http://localhost:3000/verify-otp",
+          url: "https://team-work-backend-yj86.onrender.com/verify-otp",
           contentType: "application/json",
           dataType: "json",
           data: JSON.stringify({ email: email, otp: otpCode }),
@@ -994,7 +994,7 @@
         let email = $('#email').val();
 
         $.ajax({
-          url: 'http://localhost:3000/forgot-password', // Your API endpoint
+          url: 'https://team-work-backend-yj86.onrender.com/forgot-password', // Your API endpoint
           method: 'POST',
           contentType: "application/json",
           dataType: "json",
@@ -1036,7 +1036,7 @@
         }
 
         $.ajax({
-          url: 'http://localhost:3000/reset-password', // Your API endpoint
+          url: 'https://team-work-backend-yj86.onrender.com/reset-password', // Your API endpoint
           method: 'POST',
           contentType: "application/json",
           dataType: "json",
